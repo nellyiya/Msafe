@@ -11,7 +11,8 @@ const _teal = Color(0xFF1A7A6E);
 const _tealLight = Color(0xFFE8F5F3);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _cardBorder = Color(0xFFE5E9E8);
 const _divider = Color(0xFFF0F3F2);
@@ -94,8 +95,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: _tealLight,
+                  color: _neuBase,
                   borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 5,
+                      offset: Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 5,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
                 ),
                 child: const Icon(Icons.person_search_outlined,
                     color: _teal, size: 32),
@@ -243,6 +256,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
       decoration: BoxDecoration(
         color: _teal,
         borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-6, -6),
+          ),
+          BoxShadow(
+            color: const Color(0xFF1A7A6E).withOpacity(0.25),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(6, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -414,12 +441,24 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -520,12 +559,24 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -539,8 +590,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _tealLight,
+                  color: _neuBase,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 5,
+                      offset: Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 5,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
                 ),
                 child: const Icon(Icons.calendar_today_outlined, color: _teal, size: 20),
               ),
@@ -687,8 +750,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _tealLight,
+                  color: _neuBase,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 5,
+                      offset: Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 5,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
                 ),
                 child: const Icon(Icons.calendar_today_outlined, color: _teal, size: 20),
               ),
@@ -909,12 +984,24 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -1010,8 +1097,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: _tealLight,
+              color: _neuBase,
               borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 5,
+                  offset: Offset(-3, -3),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 5,
+                  offset: const Offset(3, 3),
+                ),
+              ],
             ),
             child: Icon(icon, color: _teal, size: 18),
           ),
@@ -1076,8 +1175,20 @@ class _MotherDetailScreenState extends State<MotherDetailScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _tealLight,
+                color: _neuBase,
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  const BoxShadow(
+                    color: Color(0xFFFFFFFF),
+                    blurRadius: 5,
+                    offset: Offset(-3, -3),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 5,
+                    offset: const Offset(3, 3),
+                  ),
+                ],
               ),
               child: const Icon(Icons.calendar_today_outlined, color: _teal, size: 20),
             ),
@@ -1223,12 +1334,24 @@ class _InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -1259,8 +1382,20 @@ class _InfoRowWidget extends StatelessWidget {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: _tealLight,
+              color: _neuBase,
               borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 5,
+                  offset: Offset(-3, -3),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 5,
+                  offset: const Offset(3, 3),
+                ),
+              ],
             ),
             child: Icon(data.icon, color: _teal, size: 18),
           ),
@@ -1320,8 +1455,20 @@ class _DialogInfoRow extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: _tealLight,
+            color: _neuBase,
             borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              const BoxShadow(
+                color: Color(0xFFFFFFFF),
+                blurRadius: 5,
+                offset: Offset(-3, -3),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 5,
+                offset: const Offset(3, 3),
+              ),
+            ],
           ),
           child: Icon(icon, color: _teal, size: 18),
         ),

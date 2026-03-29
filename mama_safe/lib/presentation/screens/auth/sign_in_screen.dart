@@ -76,265 +76,197 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       backgroundColor: _bgPage,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth:
-                      Responsive.isDesktop(context) ? 460 : double.infinity,
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.padding(context),
-                    vertical: 32,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: Responsive.isDesktop(context) ? 460 : double.infinity,
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.padding(context),
+                vertical: 32,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ── Brand logo — large, like baby in reference ──
-                        Center(
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            width: 400,
-                            height: 220,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.favorite_rounded,
-                              color: _teal,
-                              size: 80,
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 400,
+                        height: 220,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.favorite_rounded,
+                          color: _teal,
+                          size: 80,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      isEnglish ? 'Welcome Back' : 'Muraho',
+                      style: const TextStyle(
+                        color: _navy,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.3,
+                        height: 1.1,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isEnglish
+                          ? 'Sign in to continue to MamaSafe'
+                          : 'Injira ufatire ku MamaSafe',
+                      style: const TextStyle(
+                        color: _gray,
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 36),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: _white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: _border, width: 1.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 24,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _FieldLabel(
+                              label: isEnglish ? 'Email Address' : 'Imeyili'),
+                          const SizedBox(height: 8),
+                          _InputField(
+                            controller: _emailController,
+                            hint: isEnglish
+                                ? 'your@email.com'
+                                : 'imeyili@email.com',
+                            icon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return isEnglish
+                                    ? 'Enter your email'
+                                    : 'Andika imeyili yawe';
+                              }
+                              if (!v.contains('@')) {
+                                return isEnglish
+                                    ? 'Enter a valid email'
+                                    : 'Imeyili siyo';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          _FieldLabel(
+                              label: isEnglish
+                                  ? 'Password'
+                                  : 'Ijambo ry\'ibanga'),
+                          const SizedBox(height: 8),
+                          _InputField(
+                            controller: _passwordController,
+                            hint: isEnglish
+                                ? 'Enter your password'
+                                : 'Ijambo ry\'ibanga',
+                            icon: Icons.lock_outline_rounded,
+                            obscureText: _obscurePassword,
+                            suffixIcon: GestureDetector(
+                              onTap: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
+                              child: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: _gray,
+                                size: 20,
+                              ),
                             ),
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return isEnglish
+                                    ? 'Enter your password'
+                                    : 'Andika ijambo ry\'ibanga';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // ── Headline — navy on light gray bg, fully readable
-                        Text(
-                          isEnglish ? 'Welcome Back' : 'Muraho',
-                          style: const TextStyle(
-                            color: _navy,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.3,
-                            height: 1.1,
+                          const SizedBox(height: 28),
+                          _SignInButton(
+                            isLoading: authProvider.isLoading,
+                            label: isEnglish ? 'Sign In' : 'Injira',
+                            onPressed: _signIn,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         Text(
                           isEnglish
-                              ? 'Sign in to continue to MamaSafe'
-                              : 'Injira ufatire ku MamaSafe',
-                          style: const TextStyle(
-                            color: _gray,
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
+                              ? "Don't have an account?"
+                              : "Nta konti ufite?",
+                          style: const TextStyle(color: _gray, fontSize: 13),
                         ),
-
-                        const SizedBox(height: 36),
-
-                        // ── Form card ───────────────────────────────
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: _white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: _border, width: 1.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 24,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
+                        TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => const SignUpScreen()),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // Email
-                              _FieldLabel(
-                                  label:
-                                      isEnglish ? 'Email Address' : 'Imeyili'),
-                              const SizedBox(height: 8),
-                              _InputField(
-                                controller: _emailController,
-                                hint: isEnglish
-                                    ? 'your@email.com'
-                                    : 'imeyili@email.com',
-                                icon: Icons.email_outlined,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    return isEnglish
-                                        ? 'Enter your email'
-                                        : 'Andika imeyili yawe';
-                                  }
-                                  if (!v.contains('@')) {
-                                    return isEnglish
-                                        ? 'Enter a valid email'
-                                        : 'Imeyili siyo';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              // Password
-                              _FieldLabel(
-                                  label: isEnglish
-                                      ? 'Password'
-                                      : 'Ijambo ry\'ibanga'),
-                              const SizedBox(height: 8),
-                              _InputField(
-                                controller: _passwordController,
-                                hint: isEnglish
-                                    ? 'Enter your password'
-                                    : 'Ijambo ry\'ibanga',
-                                icon: Icons.lock_outline_rounded,
-                                obscureText: _obscurePassword,
-                                suffixIcon: GestureDetector(
-                                  onTap: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
-                                  child: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: _gray,
-                                    size: 20,
-                                  ),
-                                ),
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    return isEnglish
-                                        ? 'Enter your password'
-                                        : 'Andika ijambo ry\'ibanga';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 28),
-
-                              // Sign In button
-                              _SignInButton(
-                                isLoading: authProvider.isLoading,
-                                label: isEnglish ? 'Sign In' : 'Injira',
-                                onPressed: _signIn,
-                              ),
-                            ],
+                          style: TextButton.styleFrom(
+                            foregroundColor: _teal,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 6),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // ── Sign up row ─────────────────────────────
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              isEnglish
-                                  ? "Don't have an account?"
-                                  : "Nta konti ufite?",
-                              style:
-                                  const TextStyle(color: _gray, fontSize: 13),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) => const SignUpScreen()),
-                              ),
-                              style: TextButton.styleFrom(
-                                foregroundColor: _teal,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 6),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                isEnglish ? 'Sign Up' : 'Iyandikishe',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // ── Footer ──────────────────────────────────
-                        Center(
                           child: Text(
-                            isEnglish
-                                ? 'MamaSafe · Maternal Health Monitoring'
-                                : 'MamaSafe · Ikurikiranire ya Mama',
-                            style: TextStyle(
-                              color: _gray.withOpacity(0.50),
-                              fontSize: 11,
-                              letterSpacing: 0.2,
+                            isEnglish ? 'Sign Up' : 'Iyandikishe',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-            ),
-            // Language switcher button
-            Positioned(
-              top: 16,
-              right: 16,
-              child: GestureDetector(
-                onTap: () => languageProvider.toggleLanguage(),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: _border, width: 1.2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.language, color: _teal, size: 18),
-                      const SizedBox(width: 6),
-                      Text(
-                        isEnglish ? 'ENG' : 'KIN',
-                        style: const TextStyle(
-                          color: _navy,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                    const SizedBox(height: 32),
+                    Center(
+                      child: Text(
+                        isEnglish
+                            ? 'MamaSafe · Maternal Health Monitoring'
+                            : 'MamaSafe · Ikurikiranire ya Mama',
+                        style: TextStyle(
+                          color: _gray.withOpacity(0.50),
+                          fontSize: 11,
+                          letterSpacing: 0.2,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-
-// ─────────────────────────────────────────────
 //  FIELD LABEL
 // ─────────────────────────────────────────────
 class _FieldLabel extends StatelessWidget {

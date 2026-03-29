@@ -14,7 +14,8 @@ const _teal = Color(0xFF1A7A6E);
 const _tealLight = Color(0xFFE8F5F3);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _cardBorder = Color(0xFFE5E9E8);
 
@@ -182,18 +183,20 @@ class _ProfileHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1A7A6E), Color(0xFF1D8C7F)],
-        ),
+        color: _teal,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 16,
+            spreadRadius: 1,
+            offset: Offset(-6, -6),
+          ),
           BoxShadow(
-            color: _teal.withOpacity(0.30),
-            blurRadius: 20,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF1A7A6E).withOpacity(0.30),
+            blurRadius: 16,
+            spreadRadius: 1,
+            offset: const Offset(6, 6),
           ),
         ],
       ),
@@ -366,18 +369,24 @@ class _SettingsTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: _white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: _cardBorder, width: 1.0),
+          border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
           boxShadow: [
-            BoxShadow(
-              color: _teal.withOpacity(0.06),
-              blurRadius: 16,
-              spreadRadius: 0,
-              offset: const Offset(0, 4),
+            const BoxShadow(
+              color: Color(0xFFFFFFFF),
+              blurRadius: 14,
+              spreadRadius: 1,
+              offset: Offset(-5, -5),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 1),
+              color: const Color(0xFF1A7A6E).withOpacity(0.12),
+              blurRadius: 14,
+              spreadRadius: 1,
+              offset: const Offset(5, 5),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(3, 3),
             ),
           ],
         ),
@@ -388,8 +397,20 @@ class _SettingsTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: _tealLight,
+                color: _neuBase,
                 borderRadius: BorderRadius.circular(13),
+                boxShadow: [
+                  const BoxShadow(
+                    color: Color(0xFFFFFFFF),
+                    blurRadius: 6,
+                    offset: Offset(-3, -3),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 6,
+                    offset: const Offset(3, 3),
+                  ),
+                ],
               ),
               child: Icon(icon, color: _teal, size: 20),
             ),

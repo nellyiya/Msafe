@@ -29,6 +29,7 @@ class MotherModel {
   final String? medication;
   final String? allergies;
   final String? diseases;
+  final int? referralId;
 
   MotherModel({
     required this.id,
@@ -54,6 +55,7 @@ class MotherModel {
     this.medication,
     this.allergies,
     this.diseases,
+    this.referralId,
   }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toJson() {
@@ -81,6 +83,7 @@ class MotherModel {
       'medication': medication,
       'allergies': allergies,
       'diseases': diseases,
+      'referralId': referralId,
     };
   }
 
@@ -117,6 +120,7 @@ class MotherModel {
       medication: json['medication'],
       allergies: json['allergies'],
       diseases: json['diseases'],
+      referralId: json['referral_id'] != null ? int.tryParse(json['referral_id'].toString()) : null,
     );
   }
 
@@ -144,6 +148,7 @@ class MotherModel {
     String? medication,
     String? allergies,
     String? diseases,
+    int? referralId,
   }) {
     return MotherModel(
       id: id ?? this.id,
@@ -169,6 +174,7 @@ class MotherModel {
       medication: medication ?? this.medication,
       allergies: allergies ?? this.allergies,
       diseases: diseases ?? this.diseases,
+      referralId: referralId ?? this.referralId,
     );
   }
 

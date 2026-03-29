@@ -12,9 +12,10 @@ import 'medical_consultation_form.dart';
 const _teal = Color(0xFF1A7A6E);
 const _tealDark = Color(0xFF145F55);
 const _tealLight = Color(0xFFE8F5F3);
-const _darkText = Color(0xFF1A2B2A); // dark teal-black — zero blue
+const _darkText = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _border = Color(0xFFE5E9E8);
 
@@ -199,7 +200,7 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
             ],
 
             // ── Actions ───────────────────────────────────────
-            if (status != 'COMPLETED') ...[
+            if (status != 'COMPLETED' && status != 'Completed') ...[
               Text(
                 isEnglish ? 'Actions' : 'Ibikorwa',
                 style: const TextStyle(
@@ -238,12 +239,38 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
                     child: _ActionButton(
                       label: isEnglish ? 'Complete' : 'Rangiza',
                       icon: Icons.check_circle_outline_rounded,
-                      color: _tealDark,
+                      color: _teal,
                       isLoading: _isLoading,
                       onPressed: _markAsCompleted,
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+            ] else ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF059669).withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF059669).withOpacity(0.3)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Case Completed',
+                      style: TextStyle(
+                        color: Color(0xFF059669),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
             ],
@@ -263,16 +290,25 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
       return;
     }
 
+    // Map display names to backend enum values
+    const statusMap = {
+      'Emergency Care Required': 'EMERGENCY_CARE_REQUIRED',
+      'Received': 'RECEIVED',
+      'Appointment Scheduled': 'APPOINTMENT_SCHEDULED',
+      'Completed': 'COMPLETED',
+    };
+    final backendStatus = statusMap[newStatus] ?? newStatus;
+
     setState(() => _isLoading = true);
     try {
       final apiService = ApiService();
-      final updateData = {'status': newStatus};
+      final updateData = {'status': backendStatus};
 
-      if (newStatus == 'Received') {
+      if (backendStatus == 'RECEIVED') {
         updateData['hospital_received_time'] = DateTime.now().toIso8601String();
       }
 
-      print('📤 Sending update for referral ${widget.referralId}');
+      print('📤 Sending update for referral ${widget.referralId}: $backendStatus');
       await apiService.updateReferral(widget.referralId, updateData);
 
       if (mounted) {
@@ -348,6 +384,17 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
       initialDate: initialDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: _teal,
+            onPrimary: _white,
+            onSurface: _darkText,
+            surface: _white,
+          ),
+        ),
+        child: child!,
+      ),
     );
 
     if (date == null) return;
@@ -355,6 +402,53 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
     final time = await showTimePicker(
       context: context,
       initialTime: initialTime,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: _teal,
+            onPrimary: _white,
+            onSurface: _darkText,
+            surface: _white,
+            secondary: _teal,
+            onSecondary: _white,
+          ),
+          timePickerTheme: TimePickerThemeData(
+            backgroundColor: _white,
+            hourMinuteColor: WidgetStateColor.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? _teal
+                  : const Color(0xFFEDF2F1),
+            ),
+            hourMinuteTextColor: WidgetStateColor.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? _white
+                  : _darkText,
+            ),
+            dialHandColor: _teal,
+            dialBackgroundColor: const Color(0xFFEDF2F1),
+            dialTextColor: WidgetStateColor.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? _white
+                  : _darkText,
+            ),
+            entryModeIconColor: _teal,
+            dayPeriodColor: WidgetStateColor.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? _teal
+                  : const Color(0xFFEDF2F1),
+            ),
+            dayPeriodTextColor: WidgetStateColor.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? _white
+                  : _darkText,
+            ),
+            dayPeriodBorderSide: const BorderSide(color: _teal),
+            confirmButtonStyle: TextButton.styleFrom(foregroundColor: _teal),
+            cancelButtonStyle: TextButton.styleFrom(foregroundColor: _gray),
+          ),
+        ),
+        child: child!,
+      ),
     );
 
     if (time == null) return;
@@ -488,7 +582,7 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
     try {
       final apiService = ApiService();
       final updateData = {
-        'status': 'Appointment Scheduled',
+        'status': 'APPOINTMENT_SCHEDULED',
         'appointment_date': date.toIso8601String(),
         'appointment_time':
             '${time.hour}:${time.minute.toString().padLeft(2, '0')}',
@@ -551,12 +645,24 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -570,8 +676,20 @@ class _SectionCard extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: _tealLight,
+                  color: _neuBase,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 5,
+                      offset: Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 5,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
                 ),
                 child: Icon(icon, color: _teal, size: 18),
               ),

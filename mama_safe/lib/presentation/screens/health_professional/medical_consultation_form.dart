@@ -7,9 +7,10 @@ import '../../../services/api_service.dart';
 const _teal = Color(0xFF1A7A6E);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF0F4F3);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
-const _border = Color(0xFFDDE3E2);
+const _border = Color(0xFFE5E9E8);
 
 class MedicalConsultationForm extends StatefulWidget {
   final int referralId;
@@ -181,12 +182,19 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14, spreadRadius: 1, offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14, spreadRadius: 1, offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8, offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -200,10 +208,14 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: _navy,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Icon(icon, color: _white, size: 16),
+                color: _neuBase,
+                borderRadius: BorderRadius.circular(9),
+                boxShadow: [
+                  const BoxShadow(color: Color(0xFFFFFFFF), blurRadius: 5, offset: Offset(-3, -3)),
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 5, offset: const Offset(3, 3)),
+                ],
+              ),
+              child: Icon(icon, color: _teal, size: 16),
               ),
               const SizedBox(width: 10),
               Text(
@@ -571,7 +583,7 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
                 borderSide: const BorderSide(color: _teal, width: 1.8),
               ),
               filled: true,
-              fillColor: _bgPage,
+              fillColor: _neuBase,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               hintText: 'Select outcome',
@@ -621,12 +633,19 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _teal.withOpacity(0.30), width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14, spreadRadius: 1, offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14, spreadRadius: 1, offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8, offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -639,11 +658,15 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: _teal,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: const Icon(Icons.verified_user_outlined,
-                    color: _white, size: 16),
+                color: _neuBase,
+                borderRadius: BorderRadius.circular(9),
+                boxShadow: [
+                  const BoxShadow(color: Color(0xFFFFFFFF), blurRadius: 5, offset: Offset(-3, -3)),
+                  BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 5, offset: const Offset(3, 3)),
+                ],
+              ),
+              child: const Icon(Icons.verified_user_outlined,
+                  color: _teal, size: 16),
               ),
               const SizedBox(width: 10),
               Text(
@@ -828,7 +851,7 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         filled: true,
-        fillColor: _bgPage,
+        fillColor: _neuBase,
       ),
     );
   }
@@ -862,7 +885,7 @@ class _MedicalConsultationFormState extends State<MedicalConsultationForm> {
           borderSide: const BorderSide(color: _teal, width: 1.8),
         ),
         filled: true,
-        fillColor: _bgPage,
+        fillColor: _neuBase,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
@@ -935,7 +958,7 @@ Date: ${DateTime.now()}
 ''';
 
       await ApiService().updateReferral(widget.referralId, {
-        'status': 'Completed',
+        'status': 'COMPLETED',
         'treatment_notes': report,
         'diagnosis': _diagnosisController.text,
       });

@@ -13,7 +13,8 @@ const _teal = Color(0xFF1A7A6E);
 const _tealLight = Color(0xFFE8F5F3);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _cardBorder = Color(0xFFE5E9E8);
 const _red = Color(0xFFDC2626);
@@ -223,8 +224,20 @@ class _PredictionsOverviewScreenState extends State<PredictionsOverviewScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: _tealLight,
+              color: _neuBase,
               borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 8,
+                  offset: Offset(-4, -4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 8,
+                  offset: const Offset(4, 4),
+                ),
+              ],
             ),
             child: const Icon(Icons.pregnant_woman_outlined, color: _teal, size: 40),
           ),
@@ -286,12 +299,24 @@ class _PredictionsOverviewScreenState extends State<PredictionsOverviewScreen> {
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -305,8 +330,20 @@ class _PredictionsOverviewScreenState extends State<PredictionsOverviewScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: _tealLight,
+                  color: _neuBase,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 6,
+                      offset: Offset(-3, -3),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 6,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Text(
@@ -372,9 +409,21 @@ class _PredictionsOverviewScreenState extends State<PredictionsOverviewScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: riskColor.withOpacity(0.08),
+              color: _neuBase,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: riskColor.withOpacity(0.2)),
+              border: Border.all(color: riskColor.withOpacity(0.35), width: 1.2),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 6,
+                  offset: Offset(-3, -3),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.07),
+                  blurRadius: 6,
+                  offset: const Offset(3, 3),
+                ),
+              ],
             ),
             child: Row(
               children: [

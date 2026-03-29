@@ -12,7 +12,8 @@ const _teal = Color(0xFF1A7A6E);
 const _tealDark = Color(0xFF145F55);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF0F4F3);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _border = Color(0xFFDDE3E2);
 
@@ -70,12 +71,26 @@ class _HospitalHomeScreenState extends State<HospitalHomeScreen> {
                 horizontal: Responsive.padding(context),
                 vertical: 18,
               ),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: _teal,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(28),
                   bottomRight: Radius.circular(28),
                 ),
+                boxShadow: [
+                  const BoxShadow(
+                    color: Color(0xFFFFFFFF),
+                    blurRadius: 14,
+                    spreadRadius: 1,
+                    offset: Offset(-6, -6),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF1A7A6E).withOpacity(0.30),
+                    blurRadius: 14,
+                    spreadRadius: 1,
+                    offset: const Offset(6, 6),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -108,8 +123,20 @@ class _HospitalHomeScreenState extends State<HospitalHomeScreen> {
                     width: 46,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: _white,
+                      color: _neuBase,
                       borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color(0xFFFFFFFF),
+                          blurRadius: 6,
+                          offset: Offset(-3, -3),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 6,
+                          offset: const Offset(3, 3),
+                        ),
+                      ],
                     ),
                     child: Center(
                       child: Text(
@@ -242,23 +269,54 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
-        color: accentColor.withOpacity(0.08),
+        color: _white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: accentColor.withOpacity(0.15), width: 1),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
+        boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
+          BoxShadow(
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Top: soft icon badge
+          // Top: inset icon container
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.15),
+              color: _neuBase,
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 5,
+                  offset: Offset(-3, -3),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 5,
+                  offset: const Offset(3, 3),
+                ),
+              ],
             ),
             child: Icon(icon, color: accentColor, size: 20),
           ),
@@ -268,8 +326,8 @@ class _StatCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: TextStyle(
-                  color: accentColor,
+                style: const TextStyle(
+                  color: _navy,
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -1.2,
@@ -280,9 +338,9 @@ class _StatCard extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  color: accentColor.withOpacity(0.65),
+                  color: _gray.withOpacity(0.85),
                   fontSize: 11,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

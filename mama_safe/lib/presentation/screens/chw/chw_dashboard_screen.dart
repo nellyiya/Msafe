@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/app_colors.dart';
 import '../../../core/responsive.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/language_provider.dart';
@@ -14,7 +13,7 @@ const _teal = Color(0xFF1A7A6E);
 const _tealLight = Color(0xFFE8F5F3);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _cardBorder = Color(0xFFE5E9E8);
 
@@ -336,15 +335,11 @@ class _Header extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1A7A6E), Color(0xFF1D8C7F)],
-        ),
+        color: _teal,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1A7A6E).withOpacity(0.30),
+            color: _teal.withOpacity(0.30),
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, 8),
@@ -505,7 +500,7 @@ class _StatData {
 }
 
 // ─────────────────────────────────────────────
-//  STAT CARD — clean white + teal icon design
+//  STAT CARD — Neumorphism (Soft UI) design
 // ─────────────────────────────────────────────
 class _StatCard extends StatelessWidget {
   final _StatData data;
@@ -513,46 +508,87 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Neumorphism base color — slightly off-white so shadows are visible
+    const neuBase = Color(0xFFEDF2F1);
+
     return Container(
       decoration: BoxDecoration(
         color: _white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _cardBorder, width: 1.2),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-6, -6),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(6, 6),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 10,
             spreadRadius: 0,
-            offset: const Offset(0, 4),
+            offset: const Offset(4, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ── Top row: icon left, tiny accent dot right ──
+          // ── Top row: inset icon + accent dot ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Teal icon square — softly tinted bg, teal icon
+              // Inset (pressed) icon container
               Container(
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: _tealLight,
-                  borderRadius: BorderRadius.circular(13),
+                  color: _white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    // Inset effect: inner dark shadow
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.10),
+                      blurRadius: 6,
+                      spreadRadius: 0,
+                      offset: const Offset(3, 3),
+                    ),
+                    // Inset effect: inner light highlight
+                    const BoxShadow(
+                      color: Color(0xFFFFFFFF),
+                      blurRadius: 6,
+                      spreadRadius: 0,
+                      offset: Offset(-3, -3),
+                    ),
+                  ],
                 ),
-                child: Icon(data.icon, color: _teal, size: 21),
+                child: Icon(data.icon, color: _teal, size: 22),
               ),
-              // Small accent circle — colored per stat type
+              // Accent pill — colored per stat type
               Container(
-                width: 8,
-                height: 8,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: data.accentColor,
-                  shape: BoxShape.circle,
+                  color: data.accentColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                      color: data.accentColor.withOpacity(0.25), width: 1),
+                ),
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: data.accentColor,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ],
@@ -575,10 +611,11 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 data.title,
-                style: const TextStyle(
-                  color: _gray,
+                style: TextStyle(
+                  color: _gray.withOpacity(0.85),
                   fontSize: 11,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -835,21 +872,29 @@ class _DueDateCountdownCardState extends State<_DueDateCountdownCard> {
         final remaining = snapshot.data ?? Duration.zero;
         final urgency = _urgencyColor(remaining);
 
+        const neuBase = Color(0xFFEDF2F1);
         return Container(
           decoration: BoxDecoration(
-            color: _white,
+            color: neuBase,
             borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
             boxShadow: [
-              BoxShadow(
-                color: _teal.withOpacity(0.10),
-                blurRadius: 24,
-                spreadRadius: 0,
-                offset: const Offset(0, 8),
+              const BoxShadow(
+                color: Color(0xFFFFFFFF),
+                blurRadius: 16,
+                spreadRadius: 1,
+                offset: Offset(-6, -6),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: const Color(0xFF1A7A6E).withOpacity(0.13),
+                blurRadius: 16,
+                spreadRadius: 1,
+                offset: const Offset(6, 6),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.07),
+                blurRadius: 10,
+                offset: const Offset(4, 4),
               ),
             ],
           ),
@@ -864,11 +909,7 @@ class _DueDateCountdownCardState extends State<_DueDateCountdownCard> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [_teal, Color(0xFF22958A)],
-                    ),
+                    color: _teal,
                   ),
                   child: Row(
                     children: [
@@ -926,10 +967,24 @@ class _DueDateCountdownCardState extends State<_DueDateCountdownCard> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 18, horizontal: 16),
                     decoration: BoxDecoration(
-                      color: urgency.withOpacity(0.06),
+                      color: neuBase,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                          color: urgency.withOpacity(0.2), width: 1.5),
+                          color: urgency.withOpacity(0.25), width: 1.5),
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color(0xFFFFFFFF),
+                          blurRadius: 8,
+                          spreadRadius: 0,
+                          offset: Offset(-4, -4),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 8,
+                          spreadRadius: 0,
+                          offset: const Offset(4, 4),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [

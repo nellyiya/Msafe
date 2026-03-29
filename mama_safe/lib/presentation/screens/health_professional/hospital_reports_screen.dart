@@ -11,9 +11,10 @@ import '../../../services/api_service.dart';
 // ─────────────────────────────────────────────
 const _teal = Color(0xFF1A7A6E);
 const _tealDark = Color(0xFF145F55);
-const _navy = Color(0xFF1A7A6E);
+const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF0F4F3);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _border = Color(0xFFDDE3E2);
 
@@ -235,12 +236,26 @@ Completed: $completedCount
                 horizontal: Responsive.padding(context),
                 vertical: 18,
               ),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: _teal,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(28),
                   bottomRight: Radius.circular(28),
                 ),
+                boxShadow: [
+                  const BoxShadow(
+                    color: Color(0xFFFFFFFF),
+                    blurRadius: 14,
+                    spreadRadius: 1,
+                    offset: Offset(-6, -6),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF1A7A6E).withOpacity(0.30),
+                    blurRadius: 14,
+                    spreadRadius: 1,
+                    offset: const Offset(6, 6),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -443,10 +458,14 @@ Completed: $completedCount
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: _navy,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: _white, size: 18),
+              color: _neuBase,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                const BoxShadow(color: Color(0xFFFFFFFF), blurRadius: 5, offset: Offset(-3, -3)),
+                BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 5, offset: const Offset(3, 3)),
+              ],
+            ),
+            child: Icon(icon, color: _teal, size: 18),
         ),
         const SizedBox(width: 10),
         Text(
@@ -536,12 +555,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -553,10 +584,14 @@ Completed: $completedCount
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: _white, size: 18),
+            color: _neuBase,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              const BoxShadow(color: Color(0xFFFFFFFF), blurRadius: 5, offset: Offset(-3, -3)),
+              BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 5, offset: const Offset(3, 3)),
+            ],
+          ),
+          child: Icon(icon, color: iconBg, size: 18),
           ),
           const SizedBox(height: 10),
           Text(
@@ -605,12 +640,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -692,12 +739,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -785,12 +844,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -879,12 +950,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),
@@ -955,12 +1038,24 @@ Completed: $completedCount
       decoration: BoxDecoration(
         color: _white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border, width: 1.0),
+        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
         boxShadow: [
+          const BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: Offset(-5, -5),
+          ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF1A7A6E).withOpacity(0.12),
+            blurRadius: 14,
+            spreadRadius: 1,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(3, 3),
           ),
         ],
       ),

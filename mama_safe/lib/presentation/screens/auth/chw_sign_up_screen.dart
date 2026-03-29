@@ -38,6 +38,7 @@ class _CHWSignUpScreenState extends State<CHWSignUpScreen> {
   String? _selectedCell;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -49,6 +50,13 @@ class _CHWSignUpScreenState extends State<CHWSignUpScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _showTermsDialog(BuildContext context, bool isEnglish) {
+    showDialog(
+      context: context,
+      builder: (_) => _TermsDialog(isEnglish: isEnglish),
+    );
   }
 
   Future<void> _signUp() async {
@@ -362,7 +370,17 @@ class _CHWSignUpScreenState extends State<CHWSignUpScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+
+                    // ── Terms & Conditions ─────────────────────
+                    _TermsCheckbox(
+                      agreed: _agreedToTerms,
+                      isEnglish: isEnglish,
+                      onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
+                      onReadTerms: () => _showTermsDialog(context, isEnglish),
+                    ),
+
+                    const SizedBox(height: 16),
 
                     // ── Submit button ──────────────────────────
                     _PrimaryButton(
@@ -370,7 +388,7 @@ class _CHWSignUpScreenState extends State<CHWSignUpScreen> {
                           ? 'Create CHW Account'
                           : 'Fungura Konti ya CHW',
                       isLoading: authProvider.isLoading,
-                      onPressed: _signUp,
+                      onPressed: _agreedToTerms ? _signUp : null,
                     ),
 
                     const SizedBox(height: 20),
@@ -682,7 +700,7 @@ class _StyledDropdown<T> extends StatelessWidget {
 class _PrimaryButton extends StatelessWidget {
   final String label;
   final bool isLoading;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const _PrimaryButton({
     required this.label,
@@ -692,38 +710,30 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled = onPressed != null && !isLoading;
     return Container(
       height: 54,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [_teal, _tealDark],
+        gradient: LinearGradient(
+          colors: enabled ? [_teal, _tealDark] : [_gray, _gray],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: _teal.withOpacity(0.30),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: enabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           foregroundColor: _white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: isLoading
             ? const SizedBox(
                 height: 22,
                 width: 22,
-                child:
-                    CircularProgressIndicator(color: _white, strokeWidth: 2.5),
+                child: CircularProgressIndicator(color: _white, strokeWidth: 2.5),
               )
             : Text(
                 label,
@@ -733,6 +743,281 @@ class _PrimaryButton extends StatelessWidget {
                   letterSpacing: 0.3,
                 ),
               ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+//  TERMS CHECKBOX
+// ─────────────────────────────────────────────
+class _TermsCheckbox extends StatelessWidget {
+  final bool agreed;
+  final bool isEnglish;
+  final ValueChanged<bool?> onChanged;
+  final VoidCallback onReadTerms;
+
+  const _TermsCheckbox({
+    required this.agreed,
+    required this.isEnglish,
+    required this.onChanged,
+    required this.onReadTerms,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: agreed ? _teal.withOpacity(0.06) : _white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: agreed ? _teal.withOpacity(0.40) : _border,
+          width: 1.2,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 22,
+            height: 22,
+            child: Checkbox(
+              value: agreed,
+              onChanged: onChanged,
+              activeColor: _teal,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              side: BorderSide(color: agreed ? _teal : _gray, width: 1.5),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Wrap(
+              children: [
+                Text(
+                  isEnglish ? 'I have read and agree to the ' : 'Nasomye kandi nemeye ',
+                  style: const TextStyle(color: _navy, fontSize: 13),
+                ),
+                GestureDetector(
+                  onTap: onReadTerms,
+                  child: Text(
+                    isEnglish ? 'Terms & Conditions' : 'Amategeko n\'Amabwiriza',
+                    style: const TextStyle(
+                      color: _teal,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: _teal,
+                    ),
+                  ),
+                ),
+                Text(
+                  isEnglish ? ' and ' : ' na ',
+                  style: const TextStyle(color: _navy, fontSize: 13),
+                ),
+                GestureDetector(
+                  onTap: onReadTerms,
+                  child: Text(
+                    isEnglish ? 'Privacy Policy' : 'Politiki y\'Ubuzima bw\'Amakuru',
+                    style: const TextStyle(
+                      color: _teal,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: _teal,
+                    ),
+                  ),
+                ),
+                Text(
+                  isEnglish ? ' of MamaSafe.' : ' ya MamaSafe.',
+                  style: const TextStyle(color: _navy, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+//  TERMS DIALOG
+// ─────────────────────────────────────────────
+class _TermsDialog extends StatelessWidget {
+  final bool isEnglish;
+  const _TermsDialog({required this.isEnglish});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: _tealLight,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: _teal,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.gavel_rounded, color: _white, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    isEnglish ? 'Terms & Conditions' : 'Amategeko n\'Amabwiriza',
+                    style: const TextStyle(
+                      color: _teal,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const Icon(Icons.close_rounded, color: _gray, size: 22),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TermsSection(
+                    title: isEnglish ? '1. Data Collection & Use' : '1. Gukusanya no Gukoresha Amakuru',
+                    body: isEnglish
+                        ? 'MamaSafe collects personal health data of pregnant mothers including vital signs, risk assessments, and referral information. This data is used solely to support maternal health monitoring and care coordination within the Kimironko Sector, Gasabo District.'
+                        : 'MamaSafe ikusanya amakuru y\'ubuzima bw\'ababyeyi barindiriye nk\'ibimenyetso by\'ubuzima, isuzuma ry\'ibyago, n\'amakuru y\'iyoherezwa. Aya makuru akoreshwa gusa gufasha gukurikirana ubuzima bw\'ababyeyi mu Murenge wa Kimironko, Akarere ka Gasabo.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '2. Confidentiality' : '2. Ibanga',
+                    body: isEnglish
+                        ? 'All patient data is strictly confidential. As a registered user, you are obligated to protect the privacy of all mothers in the system. Sharing patient information outside the platform is strictly prohibited and may result in account suspension.'
+                        : 'Amakuru yose y\'abarwayi ni ibanga cyane. Nk\'umukoresha wanditswe, ufite inshingano yo kurinda ubuzima bw\'amakuru y\'ababyeyi bose mu sisitemu. Gusangira amakuru y\'abarwayi hanze ya platform tibyemewe kandi bishobora gutera guhagarikwa kwa konti.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '3. Authorised Use Only' : '3. Gukoresha Byemewe Gusa',
+                    body: isEnglish
+                        ? 'This platform is exclusively for authorised Community Health Workers (CHWs) and Healthcare Professionals operating within the approved facilities. Misuse of the system, including entering false data or accessing unauthorised records, is a violation of these terms.'
+                        : 'Iyi platform ni iy\'inzobere z\'ubuzima bw\'umuryango (CHWs) n\'inzobere z\'ubuzima zikorera mu bikorwa byemewe gusa. Gukoresha nabi sisitemu, harimo kwinjiza amakuru y\'ibinyoma cyangwa kugera ku makuru atemewe, ni ukurenganya aya mategeko.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '4. AI Predictions Disclaimer' : '4. Impanuro z\'AI',
+                    body: isEnglish
+                        ? 'Risk predictions generated by MamaSafe are decision-support tools only. They do not replace professional medical judgment. All clinical decisions must be made by qualified healthcare professionals. MamaSafe is not liable for outcomes based solely on AI predictions.'
+                        : 'Ubushinjacyaha bw\'ibyago bwakozwe na MamaSafe ni ibikoresho byo gufasha gufata ibyemezo gusa. Ntibisimbuza ubushobozi bw\'inzobere z\'ubuvuzi. Ibyemezo byose bya kliniki bigomba gufatwa n\'inzobere z\'ubuvuzi zikwiye. MamaSafe ntizishinja ibisubizo bishingiye gusa ku bihanuro bya AI.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '5. Account Responsibility' : '5. Inshingano za Konti',
+                    body: isEnglish
+                        ? 'You are responsible for maintaining the confidentiality of your login credentials. Do not share your password with anyone. Report any suspected unauthorised access to the system administrator immediately.'
+                        : 'Uri inshingano yo kubika ibanga ry\'amakuru yo kwinjira. Ntugabane ijambo ry\'ibanga nawe uwo ari we wese. Menyesha umuyobozi wa sisitemu ako kanya igihe ubona ko hari uwinjiye nta mvuga.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '6. Data Retention' : '6. Kubika Amakuru',
+                    body: isEnglish
+                        ? 'Patient data is retained for the duration necessary to support ongoing maternal care. Data may be anonymised and used for public health research purposes in compliance with Rwandan data protection laws.'
+                        : 'Amakuru y\'abarwayi abikwa igihe gikenewe gufasha uburyo bw\'ubuzima bw\'ababyeyi. Amakuru ashobora gukurwaho amazina akoreshwa mu bushakashatsi bw\'ubuzima rusange hakurikijwe amategeko y\'uburinzi bw\'amakuru ya Rwanda.',
+                  ),
+                  _TermsSection(
+                    title: isEnglish ? '7. Consent' : '7. Imenyesha',
+                    body: isEnglish
+                        ? 'By creating an account, you confirm that you have obtained informed consent from each mother before entering their data into the system, in accordance with ethical guidelines for health data collection.'
+                        : 'Mu gufungura konti, wemeza ko wahawe imenyesha ryuzuye na buri mubyeyi mbere yo kwinjiza amakuru yabo mu sisitemu, hakurikijwe amabwiriza y\'imyitwarire yo gukusanya amakuru y\'ubuzima.',
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _teal.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: _teal.withOpacity(0.25)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline_rounded, color: _teal, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isEnglish
+                                ? 'Last updated: March 2025 · MamaSafe v2.0'
+                                : 'Ivugururwa rya nyuma: Werurwe 2025 · MamaSafe v2.0',
+                            style: const TextStyle(color: _teal, fontSize: 11, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Close button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _teal,
+                  foregroundColor: _white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: Text(
+                  isEnglish ? 'I Understand' : 'Nararosoye',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TermsSection extends StatelessWidget {
+  final String title;
+  final String body;
+  const _TermsSection({required this.title, required this.body});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: const TextStyle(
+                  color: _navy, fontSize: 13, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 5),
+          Text(body,
+              style: const TextStyle(
+                  color: _gray, fontSize: 12, height: 1.6)),
+        ],
       ),
     );
   }

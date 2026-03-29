@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/app_colors.dart';
@@ -14,7 +15,8 @@ const _tealLight = Color(0xFFE8F5F3);
 const _tealDark = Color(0xFF0F5A50);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFF4F7F6);
+const _bgPage = Color(0xFFEDF2F1);
+const _neuBase = Color(0xFFEDF2F1);
 const _gray = Color(0xFF6B7280);
 const _grayLight = Color(0xFFF3F4F6);
 const _cardBorder = Color(0xFFE5E9E8);
@@ -43,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final bool _isTyping = false;
   int? _chatRoomId;
   bool _isLoading = true;
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -54,19 +57,56 @@ class _ChatScreenState extends State<ChatScreen> {
     await _apiService.loadToken();
     await _connectToChat();
     await _loadChatHistory();
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
+    _scrollToBottom();
+    // Poll every 4 seconds for new messages
+    _pollTimer = Timer.periodic(const Duration(seconds: 4), (_) => _pollMessages());
   }
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  Future<void> _pollMessages() async {
+    if (_chatRoomId == null || !mounted) return;
+    try {
+      final messages = await _apiService.getChatMessages(_chatRoomId!);
+      final newList = messages.map((msg) => ChatMessage(
+        id: msg['id'].toString(),
+        message: msg['message'],
+        senderId: msg['sender_id'].toString(),
+        senderName: msg['sender_name'] ?? 'Unknown',
+        timestamp: DateTime.parse(msg['created_at']),
+        isFromCurrentUser: msg['is_from_current_user'] ?? false,
+      )).toList();
+      // Only update if there are new messages
+      if (newList.length != _messages.length) {
+        setState(() {
+          _messages.clear();
+          _messages.addAll(newList);
+        });
+        _scrollToBottom();
+      }
+    } catch (_) {}
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
   Future<void> _connectToChat() async {
+
     try {
       print('🔗 Attempting to connect to chat...');
       final chatRoom = await _createOrGetChatRoom();
@@ -97,7 +137,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       // Parse mother ID safely
       int motherId;
-      motherId = int.parse(widget.mother.id as String);
+      motherId = int.parse(widget.mother.id);
           
       print('📱 Creating chat room for mother $motherId with referral ${widget.referralId}');
       final chatRoom = await _apiService.createChatRoom(
@@ -165,14 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(tempMessage);
     });
 
-    // Scroll to bottom
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    });
+    _scrollToBottom();
 
     // Send to API
     try {
@@ -281,11 +314,23 @@ class _ChatScreenState extends State<ChatScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: _tealLight,
+            decoration: BoxDecoration(
+              color: _neuBase,
               border: Border(
-                bottom: BorderSide(color: _cardBorder, width: 1),
+                bottom: BorderSide(color: _teal.withOpacity(0.25), width: 1),
               ),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 6,
+                  offset: Offset(-3, -3),
+                ),
+                BoxShadow(
+                  color: const Color(0xFF1A7A6E).withOpacity(0.08),
+                  blurRadius: 6,
+                  offset: const Offset(3, 3),
+                ),
+              ],
             ),
             child: Row(
               children: [
@@ -340,11 +385,23 @@ class _ChatScreenState extends State<ChatScreen> {
           // Message input
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: _white,
-              border: Border(
+            decoration: BoxDecoration(
+              color: _neuBase,
+              border: const Border(
                 top: BorderSide(color: _cardBorder, width: 1),
               ),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 8,
+                  offset: Offset(-4, -4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 8,
+                  offset: const Offset(4, 4),
+                ),
+              ],
             ),
             child: Row(
               children: [
@@ -359,7 +416,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           : 'Andika ubutumwa bwawe...',
                       hintStyle: const TextStyle(color: _gray),
                       filled: true,
-                      fillColor: _grayLight,
+                      fillColor: _neuBase,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -377,6 +434,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   decoration: BoxDecoration(
                     color: (_chatRoomId != null) ? _teal : _gray,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      const BoxShadow(
+                        color: Color(0xFFFFFFFF),
+                        blurRadius: 6,
+                        offset: Offset(-3, -3),
+                      ),
+                      BoxShadow(
+                        color: (_chatRoomId != null)
+                            ? const Color(0xFF1A7A6E).withOpacity(0.30)
+                            : Colors.black.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(3, 3),
+                      ),
+                    ],
                   ),
                   child: IconButton(
                     onPressed: (_chatRoomId != null) ? _sendMessage : null,
@@ -404,8 +475,20 @@ class _ChatScreenState extends State<ChatScreen> {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: _tealLight,
+              color: _neuBase,
               borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                const BoxShadow(
+                  color: Color(0xFFFFFFFF),
+                  blurRadius: 8,
+                  offset: Offset(-4, -4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 8,
+                  offset: const Offset(4, 4),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.chat_bubble_outline,
@@ -452,7 +535,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (!message.isFromCurrentUser) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: _tealLight,
+              backgroundColor: _neuBase,
               child: Text(
                 message.senderName[0].toUpperCase(),
                 style: const TextStyle(
@@ -477,7 +560,23 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 border: message.isFromCurrentUser
                     ? null
-                    : Border.all(color: _cardBorder, width: 1),
+                    : Border.all(color: _teal.withOpacity(0.30), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isFromCurrentUser
+                        ? const Color(0xFF1A7A6E).withOpacity(0.25)
+                        : const Color(0xFFFFFFFF),
+                    blurRadius: 8,
+                    offset: message.isFromCurrentUser
+                        ? const Offset(3, 3)
+                        : const Offset(-3, -3),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.07),
+                    blurRadius: 8,
+                    offset: const Offset(3, 3),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -585,8 +684,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: _tealLight,
+                    color: _neuBase,
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      const BoxShadow(
+                        color: Color(0xFFFFFFFF),
+                        blurRadius: 6,
+                        offset: Offset(-3, -3),
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: 6,
+                        offset: const Offset(3, 3),
+                      ),
+                    ],
                   ),
                   child: const Icon(
                     Icons.pregnant_woman,
