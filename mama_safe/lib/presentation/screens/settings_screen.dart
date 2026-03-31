@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
@@ -7,9 +9,6 @@ import 'auth/sign_in_screen.dart';
 import 'edit_profile_screen.dart';
 import 'change_password_screen.dart';
 
-// ─────────────────────────────────────────────
-//  DESIGN TOKENS
-// ─────────────────────────────────────────────
 const _teal = Color(0xFF1A7A6E);
 const _tealLight = Color(0xFFE8F5F3);
 const _navy = Color(0xFF1E2D4E);
@@ -47,6 +46,18 @@ class SettingsScreen extends StatelessWidget {
                 userName: userName,
                 userEmail: userEmail,
                 roleLabel: authProvider.getRoleDisplayName(),
+                profileImageBytes: authProvider.profileImageBytes,
+                onPickImage: () async {
+                  final picked = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 80,
+                    maxWidth: 400,
+                  );
+                  if (picked != null) {
+                    final bytes = await picked.readAsBytes();
+                    await authProvider.updateProfileImage(bytes);
+                  }
+                },
               ),
               const SizedBox(height: 28),
 
@@ -171,11 +182,15 @@ class _ProfileHeader extends StatelessWidget {
   final String userName;
   final String userEmail;
   final String roleLabel;
+  final Uint8List? profileImageBytes;
+  final VoidCallback onPickImage;
 
   const _ProfileHeader({
     required this.userName,
     required this.userEmail,
     required this.roleLabel,
+    required this.profileImageBytes,
+    required this.onPickImage,
   });
 
   @override
@@ -232,30 +247,59 @@ class _ProfileHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
             child: Column(
               children: [
-                // Avatar
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: _white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.12),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                // Avatar with camera overlay
+                GestureDetector(
+                  onTap: onPickImage,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: _white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.12),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: profileImageBytes != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.memory(
+                                  profileImageBytes!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Text(
+                                  userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                                  style: const TextStyle(
+                                    color: _teal,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: _teal,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: _white, width: 2),
+                          ),
+                          child: const Icon(Icons.camera_alt, color: _white, size: 12),
+                        ),
                       ),
                     ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                      style: const TextStyle(
-                        color: _teal,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 14),

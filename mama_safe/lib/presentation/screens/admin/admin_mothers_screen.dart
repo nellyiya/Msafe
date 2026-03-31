@@ -214,7 +214,7 @@ class _AdminMothersScreenState extends State<AdminMothersScreen>
     final total = _mothers.length;
     final highRisk = _mothers.where((m) => m['riskLevel'] == 'High').length;
     final dueSoon = _mothers.where((m) => _isDueSoon(m['dueDate'])).length;
-    final newVisits = _mothers.where((m) {
+    final newThisWeek = _mothers.where((m) {
       return (m['lastVisit'] as DateTime)
           .isAfter(DateTime.now().subtract(const Duration(days: 7)));
     }).length;
@@ -234,7 +234,7 @@ class _AdminMothersScreenState extends State<AdminMothersScreen>
                 total: total,
                 highRisk: highRisk,
                 dueSoon: dueSoon,
-                newVisits: newVisits,
+                newVisits: newThisWeek,
                 search: _search,
                 riskFilter: _riskFilter,
                 filtered: filteredMothers,
@@ -539,32 +539,30 @@ class _MothersBody extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             // High Risk — dramatic red
-            _MiniAlertCard(
+            _MiniStatCard(
               label: 'High Risk',
               value: '$highRisk',
               sub: total > 0
                   ? '${(highRisk / total * 100).toInt()}% of total'
                   : '0% of total',
               icon: Icons.warning_amber_rounded,
-              cardColor: _kDanger,
+              accentColor: _kDanger,
             ),
             const SizedBox(width: 10),
-            // Due Soon — amber accent
             _MiniStatCard(
               label: 'Due Soon',
               value: '$dueSoon',
               sub: 'Within 2 weeks',
               icon: Icons.schedule_rounded,
-              accentColor: _kWarning,
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            // New Visits — green accent
             _MiniStatCard(
               label: 'New Visits',
               value: '$newVisits',
               sub: 'This week',
               icon: Icons.fiber_new_rounded,
-              accentColor: _kSuccess,
+              accentColor: _kPrimary,
             ),
           ]),
 
@@ -627,7 +625,7 @@ class _MothersBody extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _kSurface,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _kBorder, width: 1),
+                    border: Border.all(color: _kPrimary.withOpacity(0.7), width: 2.0),
                     boxShadow: [
                       BoxShadow(
                           color: Colors.black.withOpacity(0.03),
@@ -1155,7 +1153,7 @@ class _MotherRow extends StatelessWidget {
           // ── Risk Badge ───────────────────────────────────────────────────
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(
                 color: rc.withOpacity(0.09),
                 borderRadius: BorderRadius.circular(7),
@@ -1166,7 +1164,7 @@ class _MotherRow extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: rc,
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.1),
               ),
@@ -2223,7 +2221,6 @@ class _ComprehensiveEditMotherDialogState
         _chws = List<Map<String, dynamic>>.from(response);
       });
     } catch (e) {
-      print('Error loading CHWs: $e');
     }
   }
 

@@ -42,10 +42,8 @@ class _ChwDashboardScreenState extends State<ChwDashboardScreen> {
     try {
       final motherProvider = context.read<MotherProvider>();
       await motherProvider.loadMothers();
-      print('📊 Dashboard: Loaded ${motherProvider.totalMothersCount} mothers');
       setState(() => _isLoading = false);
     } catch (e) {
-      print('❌ Dashboard Error: $e');
       setState(() => _isLoading = false);
     }
   }

@@ -55,9 +55,6 @@ class PredictionService {
         'HeartRate': heartRate,
       };
 
-      print('🔮 Prediction Request: $requestBody');
-      print('🌐 Connecting to: $_baseUrl/predict');
-
       // Make POST request to backend
       final response = await http.post(
         Uri.parse('$_baseUrl/predict'),
@@ -71,9 +68,6 @@ class PredictionService {
           throw Exception('Connection timeout. Make sure backend is running on $_baseUrl');
         },
       );
-
-      print('📡 Response status: ${response.statusCode}');
-      print('📡 Response body: ${response.body}');
 
       // Check if request was successful
       if (response.statusCode == 200) {
@@ -113,7 +107,6 @@ class PredictionService {
     } on FormatException {
       throw Exception('We are currently unable to generate a prediction. Please try again later or consult a healthcare professional.');
     } catch (e) {
-      print('❌ Prediction error: $e');
       // If the error message is already our professional message, use it as is
       if (e.toString().contains('We are currently unable to generate a prediction')) {
         rethrow;

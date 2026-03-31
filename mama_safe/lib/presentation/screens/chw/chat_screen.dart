@@ -108,15 +108,12 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _connectToChat() async {
 
     try {
-      print('🔗 Attempting to connect to chat...');
       final chatRoom = await _createOrGetChatRoom();
       _chatRoomId = chatRoom['id'];
-      print('✅ Chat connected successfully. Room ID: $_chatRoomId');
       setState(() {
         _isConnected = true;
       });
     } catch (e) {
-      print('❌ Error connecting to chat: $e');
       setState(() {
         _isConnected = false;
         _chatRoomId = null;
@@ -138,16 +135,12 @@ class _ChatScreenState extends State<ChatScreen> {
       // Parse mother ID safely
       int motherId;
       motherId = int.parse(widget.mother.id);
-          
-      print('📱 Creating chat room for mother $motherId with referral ${widget.referralId}');
       final chatRoom = await _apiService.createChatRoom(
         motherId: motherId,
         referralId: widget.referralId,
       );
-      print('✅ Chat room created/retrieved: ${chatRoom['id']}');
       return chatRoom;
     } catch (e) {
-      print('❌ Error creating chat room: $e');
       rethrow;
     }
   }
@@ -156,7 +149,6 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_chatRoomId == null) return;
     
     try {
-      print('📱 Loading chat history for room $_chatRoomId');
       final messages = await _apiService.getChatMessages(_chatRoomId!);
       
       setState(() {
@@ -170,21 +162,13 @@ class _ChatScreenState extends State<ChatScreen> {
           isFromCurrentUser: msg['is_from_current_user'] ?? false,
         )).toList());
       });
-      
-      print('✅ Loaded ${_messages.length} messages');
     } catch (e) {
-      print('❌ Error loading chat history: $e');
     }
   }
 
   Future<void> _sendMessage() async {
-    print('💬 Attempting to send message...');
-    print('   Chat Room ID: $_chatRoomId');
-    print('   Message: "${_messageController.text.trim()}"');
-    print('   Is Connected: $_isConnected');
     
     if (_messageController.text.trim().isEmpty || _chatRoomId == null) {
-      print('❌ Cannot send message: empty text or no chat room');
       return;
     }
 
@@ -209,13 +193,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Send to API
     try {
-      print('🚀 Sending message to API...');
       final savedMessage = await _apiService.sendChatMessage(
         roomId: _chatRoomId!,
         message: messageText,
       );
-      
-      print('✅ Message sent successfully: ${savedMessage['id']}');
       
       // Replace temp message with saved message (keep original timestamp)
       setState(() {
@@ -231,10 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         }
       });
-      
-      print('✅ Message saved to database');
     } catch (e) {
-      print('❌ Error sending message: $e');
       // Remove temp message on error
       setState(() {
         _messages.removeWhere((m) => m.id == tempMessage.id);

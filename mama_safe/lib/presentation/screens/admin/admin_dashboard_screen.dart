@@ -106,10 +106,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       final highRiskMothers = adminDashboard['high_risk'] ?? 0;
       final mediumRiskMothers = adminDashboard['medium_risk'] ?? 0;
       final lowRiskMothers = adminDashboard['low_risk'] ?? 0;
-      final totalReferrals =
-          adminDashboard['total_referrals'] ?? allReferrals.length;
+      final totalReferrals = adminDashboard['total_referrals'] ?? allReferrals.length;
       final pendingReferrals = adminDashboard['pending_referrals'] ?? 0;
       final activeCHWs = adminDashboard['active_chws'] ?? allCHWs.length;
+      final totalPredictions = adminDashboard['total_predictions'] ?? adminDashboard['predictions_count'] ?? allMothers.where((m) => m['current_risk_level'] != null).length;
 
       final List<Map<String, dynamic>> locationDistribution =
           _generateLocationDistribution(allMothers, allReferrals);
@@ -187,7 +187,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         _dashboardData = {
           'totalMothers': totalMothers,
           'activeCHWs': activeCHWs,
-          'totalPredictions': allMothers.length,
+          'totalPredictions': totalPredictions,
           'totalReferrals': totalReferrals,
           'highRiskMothers': finalHighRisk,
           'emergencyReferrals': emergencyReferrals,
@@ -613,7 +613,7 @@ class _DashboardBody extends StatelessWidget {
                 value: '${data['activeCHWs']}',
                 sub: 'Across facilities',
                 icon: Icons.people_alt_rounded,
-                accentColor: kAccentBlue,
+                accentColor: kPrimary,
                 chipLabel: 'workers',
               ),
               const SizedBox(width: 10),
@@ -631,7 +631,7 @@ class _DashboardBody extends StatelessWidget {
                 value: '${data['totalReferrals']}',
                 sub: '${data['emergencyReferrals']} emergency',
                 icon: Icons.send_rounded,
-                accentColor: kWarning,
+                accentColor: kPrimary,
                 chipLabel: 'sent',
               ),
             ],
@@ -651,33 +651,33 @@ class _DashboardBody extends StatelessWidget {
                 chipLabel: 'facilities',
               ),
               const SizedBox(width: 10),
-              // HIGH RISK — red dramatic card
-              _RiskAlertCard(
+              _StatCard(
                 label: 'High Risk',
                 value: '$high',
                 sub: 'Critical attention',
                 icon: Icons.warning_amber_rounded,
-                cardColor: kDanger,
+                accentColor: kDanger,
                 chipLabel: 'urgent',
+                chipColor: kDanger,
               ),
               const SizedBox(width: 10),
-              // MEDIUM RISK — amber accent
+              // MEDIUM RISK — teal accent
               _StatCard(
                 label: 'Medium Risk',
                 value: '$medium',
                 sub: 'Monitor closely',
                 icon: Icons.info_rounded,
-                accentColor: kWarning,
+                accentColor: kPrimary,
                 chipLabel: 'watch',
               ),
               const SizedBox(width: 10),
-              // LOW RISK — teal/success
+              // LOW RISK — teal accent
               _StatCard(
                 label: 'Low Risk',
                 value: '$low',
                 sub: 'Routine care',
                 icon: Icons.check_circle_rounded,
-                accentColor: kSuccess,
+                accentColor: kPrimary,
                 chipLabel: 'stable',
               ),
             ],
@@ -838,6 +838,7 @@ class _StatCard extends StatelessWidget {
   final String label, value, sub, chipLabel;
   final IconData icon;
   final Color accentColor;
+  final Color? chipColor;
 
   const _StatCard({
     required this.label,
@@ -846,6 +847,7 @@ class _StatCard extends StatelessWidget {
     required this.icon,
     required this.accentColor,
     required this.chipLabel,
+    this.chipColor,
   });
 
   @override
@@ -896,15 +898,15 @@ class _StatCard extends StatelessWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: kBgDeep,
+                                color: chipColor != null ? chipColor!.withOpacity(0.15) : kBgDeep,
                                 borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: kBorder),
+                                border: Border.all(color: chipColor ?? kBorder),
                               ),
                               child: Text(
                                 chipLabel,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 9,
-                                  color: kTextMid,
+                                  color: chipColor ?? kTextMid,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.4,
                                 ),

@@ -67,7 +67,6 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
       _calculateMetrics();
       
     } catch (e) {
-      print('Error loading reports data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading reports: $e')),
       );

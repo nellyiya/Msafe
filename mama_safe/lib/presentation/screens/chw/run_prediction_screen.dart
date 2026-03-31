@@ -147,7 +147,6 @@ class _RunPredictionScreenState extends State<RunPredictionScreen> {
               'risk_level': result,
             });
           } catch (e) {
-            print('Failed to save health record: $e');
           }
 
           await motherProvider.updateRiskLevel(

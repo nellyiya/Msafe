@@ -50,7 +50,6 @@ class _MothersListScreenState extends State<MothersListScreen> {
         }
       }
       if (_filterRisk == 'Appointments') {
-        print('🔍 Filtering for appointments: ${mother.fullName} - hasScheduledAppointment: ${mother.hasScheduledAppointment}');
         return mother.hasScheduledAppointment == true;
       }
       if (_filterRisk == 'No Appointments') {

@@ -17,6 +17,7 @@ import 'admin/admin_appointments_screen.dart';
 import 'admin/admin_chws_screen.dart';
 import 'admin/admin_healthcare_pro_screen.dart';
 import 'admin/admin_facilities_screen.dart';
+import 'admin/admin_ai_insights_screen.dart';
 import 'admin/admin_reports_screen.dart';
 import 'settings_screen.dart';
 
@@ -251,7 +252,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       case AppUserRole.healthcareProfessional:
         return [
           HospitalHomeScreen(onRefreshCallback: (cb) => _hospitalRefreshCallback = cb),
-          const ReferralsScreen(),
+          ReferralsScreen(),
           const HospitalReportsScreen(),
           const HospitalProfileScreen(),
         ];
@@ -264,6 +265,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           const AdminCHWsScreen(),
           const AdminHealthcareProScreen(),
           const AdminFacilitiesScreen(),
+          const AdminAIInsightsScreen(),
           const AdminReportsScreen(),
         ];
     }
@@ -326,6 +328,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           const BottomNavigationBarItem(icon: Icon(Icons.health_and_safety_outlined), activeIcon: Icon(Icons.health_and_safety), label: 'CHWs'),
           const BottomNavigationBarItem(icon: Icon(Icons.medical_services_outlined), activeIcon: Icon(Icons.medical_services), label: 'Healthcare Pro'),
           const BottomNavigationBarItem(icon: Icon(Icons.business_outlined), activeIcon: Icon(Icons.business), label: 'Facilities'),
+          const BottomNavigationBarItem(icon: Icon(Icons.psychology_outlined), activeIcon: Icon(Icons.psychology), label: 'AI Insights'),
           const BottomNavigationBarItem(icon: Icon(Icons.assessment_outlined), activeIcon: Icon(Icons.assessment), label: 'Reports'),
         ];
     }

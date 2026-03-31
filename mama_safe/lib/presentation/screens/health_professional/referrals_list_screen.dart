@@ -66,9 +66,11 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
           case 'Pending':
             return status == 'PENDING' || status == 'Pending';
           case 'Appointment':
-            return status == 'APPOINTMENT_SCHEDULED' || status == 'Appointment Scheduled';
+            return status == 'APPOINTMENT_SCHEDULED' ||
+                status == 'Appointment Scheduled';
           case 'Emergency':
-            return status == 'EMERGENCY_CARE_REQUIRED' || status == 'Emergency Care Required';
+            return status == 'EMERGENCY_CARE_REQUIRED' ||
+                status == 'Emergency Care Required';
           case 'Completed':
             return status == 'COMPLETED' || status == 'Completed';
           default:
@@ -98,9 +100,11 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
         case 'Pending':
           return status == 'PENDING' || status == 'Pending';
         case 'Appointment':
-          return status == 'APPOINTMENT_SCHEDULED' || status == 'Appointment Scheduled';
+          return status == 'APPOINTMENT_SCHEDULED' ||
+              status == 'Appointment Scheduled';
         case 'Emergency':
-          return status == 'EMERGENCY_CARE_REQUIRED' || status == 'Emergency Care Required';
+          return status == 'EMERGENCY_CARE_REQUIRED' ||
+              status == 'Emergency Care Required';
         case 'Completed':
           return status == 'COMPLETED' || status == 'Completed';
         default:
@@ -178,8 +182,9 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
 
             // ── Search bar ───────────────────────────────────────
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: Responsive.padding(context)),
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.padding(context),
+              ),
               child: TextField(
                 onChanged: (v) => setState(() {
                   _searchQuery = v;
@@ -203,8 +208,10 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
                       : null,
                   filled: true,
                   fillColor: _inputFill,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 13,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: _border, width: 1.2),
@@ -221,8 +228,9 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
 
             // ── Filter chips (Wrap = responsive, no cut-off) ────
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: Responsive.padding(context)),
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.padding(context),
+              ),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -269,8 +277,12 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
             const SizedBox(height: 10),
             const Divider(color: _border, height: 1),
             Padding(
-              padding: EdgeInsets.fromLTRB(Responsive.padding(context), 10,
-                  Responsive.padding(context), 4),
+              padding: EdgeInsets.fromLTRB(
+                Responsive.padding(context),
+                10,
+                Responsive.padding(context),
+                4,
+              ),
               child: Text(
                 '${_filteredReferrals.length} referral${_filteredReferrals.length == 1 ? '' : 's'}',
                 style: const TextStyle(
@@ -286,37 +298,37 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator(color: _teal))
                   : _filteredReferrals.isEmpty
-                      ? _EmptyState(isEnglish: isEnglish)
-                      : RefreshIndicator(
-                          color: _teal,
-                          onRefresh: _loadReferrals,
-                          child: ListView.builder(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Responsive.padding(context),
-                              vertical: 8,
-                            ),
-                            itemCount: _filteredReferrals.length,
-                            itemBuilder: (context, index) {
-                              return _ReferralCard(
-                                referral: _filteredReferrals[index],
-                                onTap: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => CaseManagementScreen(
-                                        referralId: _filteredReferrals[index]
-                                            ['id'],
-                                        referralData: _filteredReferrals[index],
-                                      ),
-                                    ),
-                                  );
-                                  if (result == true) _loadReferrals();
-                                },
-                                onChatTap: () => _openChat(_filteredReferrals[index]),
-                              );
-                            },
-                          ),
+                  ? _EmptyState(isEnglish: isEnglish)
+                  : RefreshIndicator(
+                      color: _teal,
+                      onRefresh: _loadReferrals,
+                      child: ListView.builder(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Responsive.padding(context),
+                          vertical: 8,
                         ),
+                        itemCount: _filteredReferrals.length,
+                        itemBuilder: (context, index) {
+                          return _ReferralCard(
+                            referral: _filteredReferrals[index],
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CaseManagementScreen(
+                                    referralId: _filteredReferrals[index]['id'],
+                                    referralData: _filteredReferrals[index],
+                                  ),
+                                ),
+                              );
+                              if (result == true) _loadReferrals();
+                            },
+                            onChatTap: () =>
+                                _openChat(_filteredReferrals[index]),
+                          );
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -350,7 +362,8 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
       fullName: motherData['name'] ?? 'Unknown',
       age: motherData['age'] ?? 0,
       phoneNumber: motherData['phone'] ?? '',
-      address: '${motherData['village'] ?? ''}, ${motherData['cell'] ?? ''}, ${motherData['sector'] ?? ''}',
+      address:
+          '${motherData['village'] ?? ''}, ${motherData['cell'] ?? ''}, ${motherData['sector'] ?? ''}',
       emergencyContact: motherData['phone'] ?? '',
       assignedChwId: referral['chw']?['id']?.toString() ?? '',
       assignedChwName: referral['chw']?['name'] ?? 'CHW',
@@ -362,10 +375,8 @@ class _ReferralsScreenState extends State<ReferralsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatScreen(
-          mother: mother,
-          referralId: referral['id'],
-        ),
+        builder: (context) =>
+            ChatScreen(mother: mother, referralId: referral['id']),
       ),
     );
   }
@@ -401,10 +412,7 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? _teal : _white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? _teal : _border,
-            width: 1.3,
-          ),
+          border: Border.all(color: isSelected ? _teal : _border, width: 1.3),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -413,8 +421,10 @@ class _FilterChip extends StatelessWidget {
               Container(
                 width: 7,
                 height: 7,
-                decoration:
-                    BoxDecoration(color: dotColor, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: dotColor,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 5),
             ],
@@ -442,7 +452,7 @@ class _ReferralCard extends StatelessWidget {
   final VoidCallback onChatTap;
 
   const _ReferralCard({
-    required this.referral, 
+    required this.referral,
     required this.onTap,
     required this.onChatTap,
   });
@@ -552,13 +562,18 @@ class _ReferralCard extends StatelessWidget {
                         const SizedBox(height: 3),
                         Row(
                           children: [
-                            const Icon(Icons.person_outline_rounded,
-                                size: 12, color: _gray),
+                            const Icon(
+                              Icons.person_outline_rounded,
+                              size: 12,
+                              color: _gray,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Age: ${mother?['age'] ?? 'N/A'}',
-                              style:
-                                  const TextStyle(color: _gray, fontSize: 12),
+                              style: const TextStyle(
+                                color: _gray,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -590,9 +605,7 @@ class _ReferralCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   _InfoChip(
                     icon: Icons.access_time_rounded,
-                    label: createdAt != null
-                        ? _formatTime(createdAt)
-                        : 'N/A',
+                    label: createdAt != null ? _formatTime(createdAt) : 'N/A',
                     color: _teal,
                   ),
                 ],
@@ -623,8 +636,11 @@ class _ReferralCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.health_and_safety_outlined,
-                        size: 13, color: _teal),
+                    child: const Icon(
+                      Icons.health_and_safety_outlined,
+                      size: 13,
+                      color: _teal,
+                    ),
                   ),
                   const SizedBox(width: 7),
                   Expanded(
@@ -637,7 +653,10 @@ class _ReferralCard extends StatelessWidget {
                   GestureDetector(
                     onTap: onChatTap,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: _teal.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -646,7 +665,11 @@ class _ReferralCard extends StatelessWidget {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.chat_bubble_outline, size: 14, color: _teal),
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 14,
+                            color: _teal,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'Chat',
@@ -663,8 +686,11 @@ class _ReferralCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: onTap,
-                    child: const Icon(Icons.arrow_forward_ios_rounded,
-                        size: 12, color: _gray),
+                    child: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 12,
+                      color: _gray,
+                    ),
                   ),
                 ],
               ),
@@ -766,8 +792,11 @@ class _RiskBadge extends StatelessWidget {
       ),
       child: Text(
         risk,
-        style:
-            TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700),
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -825,8 +854,11 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style:
-            TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700),
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -870,7 +902,10 @@ class _EmptyState extends StatelessWidget {
           Text(
             isEnglish ? 'No referrals found' : 'Nta referrals',
             style: const TextStyle(
-                color: _darkText, fontSize: 16, fontWeight: FontWeight.w600),
+              color: _darkText,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 6),
           Text(

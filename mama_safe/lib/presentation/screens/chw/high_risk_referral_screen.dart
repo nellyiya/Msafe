@@ -115,7 +115,6 @@ class _HighRiskReferralScreenState extends State<HighRiskReferralScreen> {
         });
       }
     } catch (e) {
-      print('Error getting hospital recommendation: $e');
     } finally {
       setState(() => _isLoadingRecommendation = false);
     }

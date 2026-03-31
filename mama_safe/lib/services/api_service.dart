@@ -77,8 +77,6 @@ class ApiService {
   }
 
   Future<String> login(String email, String password) async {
-    print('🌐 API: Attempting login to $baseUrl/auth/login');
-    print('📧 Email: $email');
     
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
@@ -86,18 +84,13 @@ class ApiService {
       body: jsonEncode({'email': email, 'password': password}),
     );
 
-    print('📡 Response status: ${response.statusCode}');
-    print('📡 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final token = data['access_token'];
       await saveToken(token);
-      print('✅ Token saved');
       return token;
     } else {
       final error = jsonDecode(response.body)['detail'] ?? 'Login failed';
-      print('❌ Login failed: $error');
       throw Exception(error);
     }
   }
@@ -131,21 +124,15 @@ class ApiService {
   }
 
   Future<List<dynamic>> getMothers() async {
-    print('👩 API: Fetching mothers from $baseUrl/mothers');
     final response = await http.get(
       Uri.parse('$baseUrl/mothers'),
       headers: _getHeaders(),
     );
 
-    print('📊 Response status: ${response.statusCode}');
-    print('📊 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('✅ Mothers loaded: ${data.length} items');
       return data;
     } else {
-      print('❌ Failed to get mothers: ${response.body}');
       throw Exception('Failed to get mothers');
     }
   }
@@ -277,85 +264,60 @@ class ApiService {
   }
 
   Future<List<dynamic>> getIncomingReferrals() async {
-    print('🏛️ API: Fetching incoming referrals from $baseUrl/referrals/incoming');
     final response = await http.get(
       Uri.parse('$baseUrl/referrals/incoming'),
       headers: _getHeaders(),
     );
-
-    print('📊 Response status: ${response.statusCode}');
-    print('📊 Response body length: ${response.body.length}');
     if (response.body.length < 500) {
-      print('📊 Response body: ${response.body}');
     }
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('✅ Referrals loaded: ${data.length} items');
       return data;
     } else {
-      print('❌ Failed to get referrals: ${response.body}');
       throw Exception('Failed to get referrals');
     }
   }
 
   Future<Map<String, dynamic>> updateReferral(int id, Map<String, dynamic> data) async {
-    print('🔄 API: Updating referral $id with data: $data');
     final response = await http.put(
       Uri.parse('$baseUrl/referrals/$id'),
       headers: _getHeaders(),
       body: jsonEncode(data),
     );
 
-    print('📡 Response status: ${response.statusCode}');
-    print('📡 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
-      print('✅ Referral updated successfully');
       return jsonDecode(response.body);
     } else {
-      print('❌ Failed to update referral: ${response.body}');
       throw Exception('Failed to update referral');
     }
   }
 
   // Dashboard endpoints
   Future<Map<String, dynamic>> getCHWDashboard() async {
-    print('📊 API: Fetching CHW dashboard from $baseUrl/dashboard/chw');
     final response = await http.get(
       Uri.parse('$baseUrl/dashboard/chw'),
       headers: _getHeaders(),
     );
 
-    print('📊 Response status: ${response.statusCode}');
-    print('📊 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('✅ CHW Dashboard loaded successfully');
       return data;
     } else {
-      print('❌ Failed to get CHW dashboard: ${response.body}');
       throw Exception('Failed to get dashboard');
     }
   }
 
   Future<Map<String, dynamic>> getHealthcareProDashboard() async {
-    print('🏛️ API: Fetching healthcare pro dashboard from $baseUrl/dashboard/healthcare-pro');
     final response = await http.get(
       Uri.parse('$baseUrl/dashboard/healthcare-pro'),
       headers: _getHeaders(),
     );
 
-    print('📊 Response status: ${response.statusCode}');
-    print('📊 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('✅ Dashboard loaded successfully');
       return data;
     } else {
-      print('❌ Failed to get dashboard: ${response.body}');
       throw Exception('Failed to get dashboard');
     }
   }
@@ -397,21 +359,15 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getAdminDashboard({int days = 30}) async {
-    print('📊 API: Fetching admin dashboard from $baseUrl/admin/dashboard?days=$days');
     final response = await http.get(
       Uri.parse('$baseUrl/admin/dashboard?days=$days'),
       headers: _getHeaders(),
     );
 
-    print('📊 Response status: ${response.statusCode}');
-    print('📊 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('✅ Admin Dashboard loaded successfully');
       return data;
     } else {
-      print('❌ Failed to get admin dashboard: ${response.body}');
       throw Exception('Failed to get admin dashboard');
     }
   }
@@ -590,6 +546,18 @@ class ApiService {
     return await getAllReferrals();
   }
 
+  Future<List<dynamic>> getCHWReferrals() async {
+    // Get referrals created by the current CHW via the referrals endpoint
+    final response = await http.get(
+      Uri.parse('$baseUrl/referrals'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return [];
+  }
+
   Future<List<dynamic>> getAppointments() async {
     final referrals = await getAllReferrals();
     final mothers = await getAllMothersAdmin();
@@ -610,12 +578,15 @@ class ApiService {
         appointments.add({
           'id': r['id'],
           'mother_id': r['mother_id'],
-          'healthcare_professional_id': r['referred_to_id'],
+          'healthcare_professional_id': r['healthcare_pro_id'] ?? r['referred_to_id'],
+          'healthcare_pro': r['healthcare_pro'],
+          'doctor_name': r['doctor_name'],
+          'hospital': r['hospital'] ?? r['referred_to_facility'],
           'appointment_date': r['appointment_date'] ?? r['created_at'],
           'status': r['status'],
           'notes': r['notes'],
           'reason': r['reason'],
-          'facility': r['referred_to_facility'],
+          'facility': r['hospital'] ?? r['referred_to_facility'] ?? r['facility'],
           'chw_id': r['chw_id'],
         });
       }
@@ -673,11 +644,6 @@ class ApiService {
     required int motherId,
     required int referralId,
   }) async {
-    print('🔗 API: Creating chat room...');
-    print('   Mother ID: $motherId');
-    print('   Referral ID: $referralId');
-    print('   URL: $baseUrl/chat/rooms');
-    
     final response = await http.post(
       Uri.parse('$baseUrl/chat/rooms'),
       headers: _getHeaders(),
@@ -687,16 +653,10 @@ class ApiService {
       }),
     );
 
-    print('📡 Response status: ${response.statusCode}');
-    print('📡 Response body: ${response.body}');
-
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print('✅ Chat room created/retrieved successfully');
-      return data;
+      return jsonDecode(response.body);
     } else {
       final error = jsonDecode(response.body)['detail'] ?? 'Failed to create chat room';
-      print('❌ Failed to create chat room: $error');
       throw Exception(error);
     }
   }

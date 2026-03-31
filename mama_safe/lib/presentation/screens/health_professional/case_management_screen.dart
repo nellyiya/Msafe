@@ -283,7 +283,6 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
   // ── Logic (unchanged) ───────────────────────────────────────
 
   Future<void> _updateStatus(String newStatus) async {
-    print('🔄 Updating status to: $newStatus');
 
     if (newStatus == 'Completed') {
       await _markAsCompleted();
@@ -307,8 +306,6 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
       if (backendStatus == 'RECEIVED') {
         updateData['hospital_received_time'] = DateTime.now().toIso8601String();
       }
-
-      print('📤 Sending update for referral ${widget.referralId}: $backendStatus');
       await apiService.updateReferral(widget.referralId, updateData);
 
       if (mounted) {
@@ -321,7 +318,6 @@ class _CaseManagementScreenState extends State<CaseManagementScreen> {
         Navigator.pop(context, true);
       }
     } catch (e) {
-      print('❌ Error updating status: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

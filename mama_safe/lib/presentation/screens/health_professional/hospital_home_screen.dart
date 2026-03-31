@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui' as ui;
 import '../../../core/responsive.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/language_provider.dart';
@@ -12,8 +13,8 @@ const _teal = Color(0xFF1A7A6E);
 const _tealDark = Color(0xFF145F55);
 const _navy = Color(0xFF1E2D4E);
 const _white = Color(0xFFFFFFFF);
-const _bgPage = Color(0xFFEDF2F1);
-const _neuBase = Color(0xFFEDF2F1);
+const _bgGradientStart = Color(0xFFEDF2F1);
+const _bgGradientEnd = Color(0xFFF5F7FA);
 const _gray = Color(0xFF6B7280);
 const _border = Color(0xFFDDE3E2);
 
@@ -60,122 +61,139 @@ class _HospitalHomeScreenState extends State<HospitalHomeScreen> {
     final userName = authProvider.currentUserName ?? 'Doctor';
 
     return Scaffold(
-      backgroundColor: _bgPage,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Header ──────────────────────────────────────────
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.padding(context),
-                vertical: 18,
-              ),
-              decoration: BoxDecoration(
-                color: _teal,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(28),
-                  bottomRight: Radius.circular(28),
+      backgroundColor: _white,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [_bgGradientStart, _bgGradientEnd],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // ── Header ──────────────────────────────────────────
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.padding(context),
+                  vertical: 20,
                 ),
-                boxShadow: [
-                  const BoxShadow(
-                    color: Color(0xFFFFFFFF),
-                    blurRadius: 14,
-                    spreadRadius: 1,
-                    offset: Offset(-6, -6),
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFF1A7A6E).withOpacity(0.30),
-                    blurRadius: 14,
-                    spreadRadius: 1,
-                    offset: const Offset(6, 6),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${isEnglish ? 'Hello' : 'Muraho'}, Dr. $userName',
-                          style: const TextStyle(
-                            color: _white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          isEnglish ? 'Healthcare Professional' : 'Umuganga',
-                          style: TextStyle(
-                            color: _white.withOpacity(0.80),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: _neuBase,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        const BoxShadow(
-                          color: Color(0xFFFFFFFF),
-                          blurRadius: 6,
-                          offset: Offset(-3, -3),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: 6,
-                          offset: const Offset(3, 3),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        userName.isNotEmpty ? userName[0].toUpperCase() : 'D',
-                        style: const TextStyle(
-                          color: _teal,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${isEnglish ? 'Hello' : 'Muraho'}, Dr. $userName',
+                      style: const TextStyle(
+                        color: _navy,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      isEnglish
+                          ? 'Welcome to your Health Dashboard'
+                          : 'Karibu ku Dashboard',
+                      style: TextStyle(
+                        color: _gray.withOpacity(0.70),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            // ── Body ────────────────────────────────────────────
-            Expanded(
-              child: RefreshIndicator(
-                color: _teal,
-                onRefresh: _loadDashboardData,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Responsive.padding(context),
-                    vertical: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildStatsSection(context, isEnglish),
-                    ],
+              // ── Body ────────────────────────────────────────────
+              Expanded(
+                child: RefreshIndicator(
+                  color: _teal,
+                  onRefresh: _loadDashboardData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Responsive.padding(context),
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [_buildDashboard(context, isEnglish)],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDashboard(BuildContext context, bool isEnglish) {
+    final totalReferrals = _dashboardData?['total_referrals'] ?? 0;
+    final pendingReferrals = _dashboardData?['pending_referrals'] ?? 0;
+    final emergencyCases = _dashboardData?['emergency_cases'] ?? 0;
+    final scheduledAppointments =
+        _dashboardData?['scheduled_appointments'] ?? 0;
+
+    final dashboardCards = [
+      {
+        'title': isEnglish ? 'Total Referrals' : 'Referrals Zose',
+        'value': totalReferrals.toString(),
+        'status': isEnglish ? 'This Month' : 'Ukwezi',
+        'gradient': [const Color(0xFF1A7A6E), const Color(0xFF259883)],
+        'icon': Icons.inbox_rounded,
+        'progress': 75.0,
+      },
+      {
+        'title': isEnglish ? 'Pending Cases' : 'Ibibazo Zigihari',
+        'value': pendingReferrals.toString(),
+        'status': isEnglish ? 'Urgent' : 'Bikomeye',
+        'gradient': [const Color(0xFF1A7A6E), const Color(0xFF259883)],
+        'icon': Icons.pending_actions_rounded,
+        'progress': 45.0,
+      },
+      {
+        'title': isEnglish ? 'Emergency Cases' : 'Ibibazo Bikomeye',
+        'value': emergencyCases.toString(),
+        'status': isEnglish ? 'Active' : 'Ukuri',
+        'gradient': [const Color(0xFF1A7A6E), const Color(0xFF259883)],
+        'icon': Icons.emergency_rounded,
+        'progress': 60.0,
+      },
+      {
+        'title': isEnglish ? 'Appointments' : 'Gahunda',
+        'value': scheduledAppointments.toString(),
+        'status': isEnglish ? 'Scheduled' : 'Byahitanwe',
+        'gradient': [const Color(0xFF1A7A6E), const Color(0xFF259883)],
+        'icon': Icons.calendar_today_rounded,
+        'progress': 85.0,
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.95,
+      ),
+      itemCount: dashboardCards.length,
+      itemBuilder: (context, index) {
+        final card = dashboardCards[index];
+        return _GlassmorphCard(
+          title: card['title'] as String,
+          value: card['value'] as String,
+          status: card['status'] as String,
+          gradient: card['gradient'] as List<Color>,
+          icon: card['icon'] as IconData,
+          progress: card['progress'] as double,
+        );
+      },
     );
   }
 
@@ -251,7 +269,150 @@ class _HospitalHomeScreenState extends State<HospitalHomeScreen> {
 }
 
 // ─────────────────────────────────────────────
-//  STAT CARD
+//  GLASSMORPHISM CARD
+// ─────────────────────────────────────────────
+class _GlassmorphCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final String status;
+  final List<Color> gradient;
+  final IconData icon;
+  final double progress;
+
+  const _GlassmorphCard({
+    required this.title,
+    required this.value,
+    required this.status,
+    required this.gradient,
+    required this.icon,
+    required this.progress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                gradient[0].withOpacity(0.85),
+                gradient[1].withOpacity(0.70),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: _white.withOpacity(0.20), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: gradient[0].withOpacity(0.30),
+                blurRadius: 20,
+                spreadRadius: 0,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Top: Title and Status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            color: _white.withOpacity(0.80),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          status,
+                          style: TextStyle(
+                            color: _white.withOpacity(0.65),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: _white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _white.withOpacity(0.25),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(icon, color: _white, size: 22),
+                  ),
+                ],
+              ),
+              // Middle: Big Number
+              Text(
+                value,
+                style: const TextStyle(
+                  color: _white,
+                  fontSize: 40,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -1.5,
+                  height: 1.0,
+                ),
+              ),
+              // Bottom: Progress Bar
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: progress / 100,
+                      minHeight: 4,
+                      backgroundColor: _white.withOpacity(0.20),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        _white.withOpacity(0.80),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${progress.toStringAsFixed(0)}% Complete',
+                    style: TextStyle(
+                      color: _white.withOpacity(0.70),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+//  STAT CARD (Legacy)
 // ─────────────────────────────────────────────
 class _StatCard extends StatelessWidget {
   final String title;
@@ -269,28 +430,20 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: _white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
+        gradient: LinearGradient(
+          colors: [accentColor, accentColor.withOpacity(0.75)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
-          const BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 14,
-            spreadRadius: 1,
-            offset: Offset(-5, -5),
-          ),
           BoxShadow(
-            color: const Color(0xFF1A7A6E).withOpacity(0.12),
-            blurRadius: 14,
-            spreadRadius: 1,
-            offset: const Offset(5, 5),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(3, 3),
+            color: accentColor.withOpacity(0.25),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -298,54 +451,60 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Top: inset icon container
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: _neuBase,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                const BoxShadow(
-                  color: Color(0xFFFFFFFF),
-                  blurRadius: 5,
-                  offset: Offset(-3, -3),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.10),
-                  blurRadius: 5,
-                  offset: const Offset(3, 3),
-                ),
-              ],
+          // Top section with icon and number
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Icon
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: _white.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(icon, color: _white, size: 24),
+                  ),
+                  // Number
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      color: _white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -1.2,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Icon(icon, color: accentColor, size: 20),
           ),
-          // Bottom: big number + label
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  color: _navy,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -1.2,
-                  height: 1.0,
-                ),
+          // Bottom dark label bar
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.25),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(22),
+                bottomRight: Radius.circular(22),
               ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: TextStyle(
-                  color: _gray.withOpacity(0.85),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: _white.withOpacity(0.95),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

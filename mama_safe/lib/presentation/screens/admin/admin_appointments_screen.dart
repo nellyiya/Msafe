@@ -121,39 +121,62 @@ class _AdminAppointmentsScreenState extends State<AdminAppointmentsScreen>
         }
       }
       
-      // Find healthcare professional - handle null assignments properly
+      // Find healthcare professional
       String doctorName = 'Not Assigned';
-      
-      // Try to find doctor by ID if available
-      final doctorId = a['healthcare_professional_id'];
-      if (doctorId != null) {
-        final hp = healthcarePros.firstWhere(
-          (h) => h['id'].toString() == doctorId.toString(),
-          orElse: () => <String, dynamic>{},
-        );
-        
-        if (hp.isNotEmpty) {
-          doctorName = hp['name'] ?? 'Unknown Doctor';
+
+      // 1. Nested healthcare_pro object
+      final nestedHp = a['healthcare_pro'];
+      if (nestedHp != null && nestedHp['name'] != null) {
+        doctorName = nestedHp['name'];
+      }
+
+      // 2. doctor_name field directly
+      if (doctorName == 'Not Assigned') {
+        final dn = a['doctor_name'];
+        if (dn != null && dn.toString().isNotEmpty) {
+          doctorName = dn.toString().startsWith('Dr.') ? dn : 'Dr. $dn';
         }
       }
-      
-      // If no doctor ID, try facility matching
+
+      // 3. Look up by healthcare_professional_id
       if (doctorName == 'Not Assigned') {
-        final facility = a['facility'];
-        if (facility != null && facility.toString().isNotEmpty) {
-          final facilityLower = facility.toString().toLowerCase();
-          
-          final facilityDoctor = healthcarePros.firstWhere(
-            (h) {
-              final hFacility = h['facility']?.toString().toLowerCase() ?? '';
-              return hFacility.contains(facilityLower) || facilityLower.contains(hFacility);
+        final doctorId = a['healthcare_professional_id'];
+        if (doctorId != null) {
+          final hp = healthcarePros.firstWhere(
+            (h) => h['id'].toString() == doctorId.toString(),
+            orElse: () => <String, dynamic>{},
+          );
+          if (hp.isNotEmpty) doctorName = hp['name'] ?? 'Unknown Doctor';
+        }
+      }
+
+      // 4. Match by hospital name — same proven mapping as referrals screen
+      final hospital = a['hospital'] ?? a['facility'];
+      if (doctorName == 'Not Assigned' && hospital != null && hospital.toString().isNotEmpty) {
+        final h = hospital.toString().toLowerCase();
+        if (h.contains('king faisal') || h.contains('kfh')) {
+          doctorName = 'Dr. Aurore Isimbi';
+        } else if (h.contains('kibagabaga')) {
+          doctorName = 'Dr. Keza Diana';
+        } else if (h.contains('kacyiru')) {
+          doctorName = 'Dr. Sonia Uwera';
+        } else if (h.contains('muhima')) {
+          doctorName = 'Dr. Jean Baptiste';
+        } else if (h.contains('nyagatare')) {
+          doctorName = 'Dr. Marie Claire';
+        } else if (h.contains('butaro')) {
+          doctorName = 'Dr. Emmanuel Nzeyimana';
+        } else {
+          // 5. Try facility match against healthcare pros list
+          final hp = healthcarePros.firstWhere(
+            (p) {
+              final pf = p['facility']?.toString().toLowerCase() ?? '';
+              return pf.isNotEmpty && (pf.contains(h) || h.contains(pf));
             },
             orElse: () => <String, dynamic>{},
           );
-          
-          if (facilityDoctor.isNotEmpty) {
-            doctorName = facilityDoctor['name'] ?? 'Unknown Doctor';
-          }
+          // 6. Last resort: show hospital name so it's never blank
+          doctorName = hp.isNotEmpty ? (hp['name'] ?? hospital.toString()) : hospital.toString();
         }
       }
       
@@ -177,7 +200,7 @@ class _AdminAppointmentsScreenState extends State<AdminAppointmentsScreen>
       return db.compareTo(da);
     });
 
-    _total = _appointments.length;
+    _total = _appointments.where((a) => a['status'] != 'no_appointment').length;
     _upcoming = 0;
     _missed = 0;
     _today = 0;
@@ -215,11 +238,8 @@ class _AdminAppointmentsScreenState extends State<AdminAppointmentsScreen>
     });
     
     // Debug: Print healthcare professionals data
-    print('👨‍⚕️ Available Healthcare Professionals:');
     for (var hp in healthcarePros) {
-      print('  - ${hp['name']} (ID: ${hp['id']}) at ${hp['facility'] ?? hp['hospital'] ?? 'Unknown facility'}');
     }
-    print('Total healthcare professionals: ${healthcarePros.length}\n');
   }
 
   String _getDefaultDoctorName(String facility) {
@@ -452,48 +472,36 @@ class _AppBody extends StatelessWidget {
         children: [
           // ── KPI Cards ────────────────────────────────────────────────────
           Row(children: [
-            _KpiCard(
+            _StatCard(
               label: 'Total',
               value: '$total',
               sub: 'All appointments',
               icon: Icons.calendar_month_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Upcoming',
               value: '$upcoming',
               sub: 'Scheduled ahead',
               icon: Icons.schedule_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Missed',
               value: '$missed',
               sub: 'Needs follow-up',
               icon: Icons.event_busy_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kDanger,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Today',
               value: '$today',
               sub: 'Scheduled today',
               icon: Icons.today_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
           ]),
 
@@ -568,7 +576,7 @@ class _AppBody extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _kSurface,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _kBorder),
+                    border: Border.all(color: _kPrimary.withOpacity(0.7), width: 2.0),
                   ),
                   child: TextField(
                     onChanged: onSearch,
@@ -661,6 +669,96 @@ class _AppBody extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Stat Card ───────────────────────────────────────────────────────────────
+
+class _StatCard extends StatelessWidget {
+  final String label, value, sub;
+  final IconData icon;
+  final Color accentColor;
+
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.sub,
+    required this.icon,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: _kSurface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2EDEB), width: 1),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 4)),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 4, color: accentColor),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: accentColor.withOpacity(0.10),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(icon, color: accentColor, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(value,
+                                  style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                      color: _kTextDark,
+                                      letterSpacing: -1.0,
+                                      height: 1.0)),
+                              const SizedBox(height: 2),
+                              Text(label,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: _kTextDark,
+                                      fontWeight: FontWeight.w600)),
+                              Text(sub,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: accentColor,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

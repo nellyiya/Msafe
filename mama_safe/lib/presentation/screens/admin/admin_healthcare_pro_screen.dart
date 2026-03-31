@@ -311,48 +311,36 @@ class _ProBody extends StatelessWidget {
         children: [
           // ── KPI Cards ────────────────────────────────────────────────────
           Row(children: [
-            _KpiCard(
+            _StatCard(
               label: 'Total Doctors',
               value: '$total',
               sub: '$active active',
               icon: Icons.medical_services_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Active',
               value: '$active',
               sub: '$activeRate% active rate',
               icon: Icons.check_circle_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Total Referrals',
               value: '$totalRef',
               sub: 'Handled by all',
               icon: Icons.send_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _KpiCard(
+            _StatCard(
               label: 'Inactive',
               value: '$inactive',
               sub: 'Need attention',
               icon: Icons.schedule_rounded,
-              gradient: const LinearGradient(
-                  colors: [Color(0xFF0D6B5E), Color(0xFF0D6B5E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
+              accentColor: _kDanger,
             ),
           ]),
 
@@ -412,7 +400,7 @@ class _ProBody extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _kSurface,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _kBorder),
+                    border: Border.all(color: _kPrimary.withOpacity(0.7), width: 2.0),
                   ),
                   child: TextField(
                     onChanged: onSearch,
@@ -500,6 +488,96 @@ class _ProBody extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Stat Card ───────────────────────────────────────────────────────────────
+
+class _StatCard extends StatelessWidget {
+  final String label, value, sub;
+  final IconData icon;
+  final Color accentColor;
+
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.sub,
+    required this.icon,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: _kSurface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2EDEB), width: 1),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 4)),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 4, color: accentColor),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: accentColor.withOpacity(0.10),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(icon, color: accentColor, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(value,
+                                  style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                      color: _kTextDark,
+                                      letterSpacing: -1.0,
+                                      height: 1.0)),
+                              const SizedBox(height: 2),
+                              Text(label,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: _kTextDark,
+                                      fontWeight: FontWeight.w600)),
+                              Text(sub,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: accentColor,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

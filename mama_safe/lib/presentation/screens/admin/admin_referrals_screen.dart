@@ -200,23 +200,18 @@ class _AdminReferralsScreenState extends State<AdminReferralsScreen>
       setState(() {
         _referrals = processed;
         _total = allReferrals.length;
-        _emergency = allReferrals
-            .where((r) =>
-                r['status']?.toLowerCase() == 'emergency' ||
-                r['urgency']?.toLowerCase() == 'emergency' ||
-                r['priority']?.toLowerCase() == 'emergency')
-            .length;
-        _pending = allReferrals
-            .where((r) =>
-                r['status']?.toLowerCase() == 'pending' ||
-                r['status']?.toLowerCase() == 'waiting')
-            .length;
-        _completed = allReferrals
-            .where((r) =>
-                r['status']?.toLowerCase() == 'completed' ||
-                r['status']?.toLowerCase() == 'resolved' ||
-                r['status']?.toLowerCase() == 'closed')
-            .length;
+        _emergency = allReferrals.where((r) {
+          final s = r['status']?.toString().toLowerCase() ?? '';
+          return s.contains('emergency') || s.contains('high risk') || s.contains('critical');
+        }).length;
+        _pending = allReferrals.where((r) {
+          final s = r['status']?.toString().toLowerCase() ?? '';
+          return s.contains('pending') || s.contains('waiting') || s.contains('received') || s == 'high risk referral';
+        }).length;
+        _completed = allReferrals.where((r) {
+          final s = r['status']?.toString().toLowerCase() ?? '';
+          return s.contains('completed') || s.contains('resolved') || s.contains('closed') || s.contains('appointment scheduled') || s.contains('done');
+        }).length;
         _isLoading = false;
       });
 
@@ -235,26 +230,36 @@ class _AdminReferralsScreenState extends State<AdminReferralsScreen>
             r['chwName'].toLowerCase().contains(q) ||
             r['doctorName'].toLowerCase().contains(q) ||
             r['facility'].toLowerCase().contains(q);
-        final matchStatus = _statusFilter == 'All Status' ||
-            r['status'].toLowerCase().contains(_statusFilter.toLowerCase());
+        final s = r['status'].toString().toLowerCase();
+        bool matchStatus = _statusFilter == 'All Status';
+        if (!matchStatus) {
+          switch (_statusFilter) {
+            case 'Emergency':
+              matchStatus = s.contains('emergency') || s.contains('high risk') || s.contains('critical');
+              break;
+            case 'Pending':
+              matchStatus = s.contains('pending') || s.contains('waiting') || s.contains('received');
+              break;
+            case 'Assigned':
+              matchStatus = s.contains('assigned') || s.contains('in_progress') || s.contains('appointment');
+              break;
+            case 'Completed':
+              matchStatus = s.contains('completed') || s.contains('resolved') || s.contains('closed') || s.contains('done');
+              break;
+            default:
+              matchStatus = s.contains(_statusFilter.toLowerCase());
+          }
+        }
         return matchSearch && matchStatus;
       }).toList();
 
   Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'emergency':
-        return _kDanger;
-      case 'completed':
-      case 'resolved':
-      case 'closed':
-        return _kSuccess;
-      case 'assigned':
-      case 'in_progress':
-      case 'appointment_scheduled':
-        return _kAccentBlue;
-      default:
-        return _kWarning;
-    }
+    final s = status.toLowerCase();
+    if (s.contains('emergency') || s.contains('high risk') || s.contains('critical')) return _kDanger;
+    if (s.contains('completed') || s.contains('resolved') || s.contains('closed') || s.contains('done')) return _kSuccess;
+    if (s.contains('appointment') || s.contains('scheduled')) return _kAccentBlue;
+    if (s.contains('assigned') || s.contains('in_progress')) return _kAccentBlue;
+    return _kWarning;
   }
 
   String _timeAgo(DateTime dt) {
@@ -448,12 +453,12 @@ class _ReferralsBody extends StatelessWidget {
               accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
-            _AlertCard(
+            _StatCard(
               label: 'Emergency',
               value: '$emergency',
               sub: 'Needs urgent care',
               icon: Icons.warning_amber_rounded,
-              cardColor: _kDanger,
+              accentColor: _kDanger,
             ),
             const SizedBox(width: 10),
             _StatCard(
@@ -461,7 +466,7 @@ class _ReferralsBody extends StatelessWidget {
               value: '$pending',
               sub: 'Awaiting action',
               icon: Icons.pending_rounded,
-              accentColor: _kWarning,
+              accentColor: _kPrimary,
             ),
             const SizedBox(width: 10),
             _StatCard(
@@ -469,7 +474,7 @@ class _ReferralsBody extends StatelessWidget {
               value: '$completed',
               sub: 'Resolved cases',
               icon: Icons.check_circle_rounded,
-              accentColor: _kSuccess,
+              accentColor: _kPrimary,
             ),
           ]),
 
@@ -552,7 +557,7 @@ class _ReferralsBody extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _kSurface,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _kBorder, width: 1),
+                    border: Border.all(color: _kPrimary.withOpacity(0.7), width: 2.0),
                     boxShadow: [
                       BoxShadow(
                           color: Colors.black.withOpacity(0.03),

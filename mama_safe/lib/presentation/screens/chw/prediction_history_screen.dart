@@ -75,7 +75,6 @@ class _PredictionHistoryScreenState extends State<PredictionHistoryScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('❌ Error loading prediction history: $e');
       setState(() => _isLoading = false);
     }
   }

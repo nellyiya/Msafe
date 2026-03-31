@@ -695,12 +695,24 @@ class _ReferralCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: _white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _cardBorder, width: 1.2),
+          border: Border.all(color: _teal.withOpacity(0.35), width: 1.2),
           boxShadow: [
+            const BoxShadow(
+              color: Color(0xFFFFFFFF),
+              blurRadius: 14,
+              spreadRadius: 1,
+              offset: Offset(-5, -5),
+            ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+              color: const Color(0xFF1A7A6E).withOpacity(0.12),
+              blurRadius: 14,
+              spreadRadius: 1,
+              offset: const Offset(5, 5),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(3, 3),
             ),
           ],
         ),
@@ -717,8 +729,20 @@ class _ReferralCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: _tealLight,
+                      color: const Color(0xFFEDF2F1),
                       borderRadius: BorderRadius.circular(13),
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color(0xFFFFFFFF),
+                          blurRadius: 6,
+                          offset: Offset(-3, -3),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.10),
+                          blurRadius: 6,
+                          offset: const Offset(3, 3),
+                        ),
+                      ],
                     ),
                     child: Center(
                       child: Text(
@@ -825,9 +849,8 @@ class _ReferralCard extends StatelessWidget {
                         label: const Text('Details',
                             style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: _darkText,
-                          side:
-                              const BorderSide(color: _cardBorder, width: 1.2),
+                          foregroundColor: const Color(0xFFDC2626),
+                          side: const BorderSide(color: Color(0xFFDC2626), width: 1.2),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(9)),
                           padding: const EdgeInsets.symmetric(horizontal: 8),

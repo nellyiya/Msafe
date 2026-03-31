@@ -861,6 +861,24 @@ def create_referral(referral: ReferralCreate, db: Session = Depends(get_db), cur
     db.refresh(db_referral)
     return db_referral
 
+@app.get("/referrals")
+def get_chw_referrals(db: Session = Depends(get_db), current_user: User = Depends(get_approved_user)):
+    """Get referrals created by the current CHW"""
+    from sqlalchemy import text
+    referrals_raw = db.execute(
+        text("""
+            SELECT id, mother_id, hospital, status, created_at
+            FROM referrals
+            WHERE chw_id = :chw_id
+            ORDER BY created_at DESC
+        """),
+        {"chw_id": current_user.id}
+    ).fetchall()
+    return [
+        {"id": r[0], "mother_id": r[1], "hospital": r[2], "status": r[3], "created_at": r[4]}
+        for r in referrals_raw
+    ]
+
 @app.get("/referrals/incoming")
 def get_incoming_referrals(db: Session = Depends(get_db), current_user: User = Depends(get_approved_user)):
     if current_user.role != UserRole.HEALTHCARE_PRO:

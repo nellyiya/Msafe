@@ -75,7 +75,6 @@ class MotherProvider extends ChangeNotifier {
 
   // Load mothers from API
   Future<void> loadMothers() async {
-    print('🔄 MotherProvider: Starting to load mothers...');
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -83,14 +82,36 @@ class MotherProvider extends ChangeNotifier {
     try {
       final apiService = ApiService();
       final mothersData = await apiService.getMothers();
-      print('📊 MotherProvider: Received ${mothersData.length} mothers from API');
-      _mothers = mothersData.map((m) => MotherModel.fromJson(m)).toList();
-      print('✅ MotherProvider: Successfully parsed ${_mothers.length} mothers');
+
+      // Also load referrals to attach referral_id to each mother
+      List<dynamic> referralsData = [];
+      try {
+        referralsData = await apiService.getCHWReferrals();
+      } catch (_) {}
+
+      // Build a map of mother_id -> latest referral_id
+      final Map<String, int> motherReferralMap = {};
+      for (final r in referralsData) {
+        final mId = r['mother_id']?.toString();
+        final rId = r['id'];
+        if (mId != null && rId != null) {
+          motherReferralMap[mId] = rId is int ? rId : int.tryParse(rId.toString()) ?? 0;
+        }
+      }
+
+      _mothers = mothersData.map((m) {
+        final mother = MotherModel.fromJson(m);
+        final referralId = motherReferralMap[mother.id];
+        if (referralId != null && referralId > 0) {
+          return mother.copyWith(referralId: referralId);
+        }
+        return mother;
+      }).toList();
+
       await _saveMothers();
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      print('❌ MotherProvider: Error loading mothers: $e');
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
