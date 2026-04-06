@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/app_strings.dart';
@@ -89,9 +90,11 @@ class AuthProvider extends ChangeNotifier {
   String? _currentUserName;
   String? _currentUserEmail;
   String? _currentUserPhone;
+  String? _currentUserFacility;
   AppUserRole? _currentUserRole;
   bool _isApproved = false;
   List<UserModel> _allUsers = [];
+  Uint8List? _profileImageBytes;
 
   // Getters
   bool get isAuthenticated => _isAuthenticated;
@@ -100,9 +103,11 @@ class AuthProvider extends ChangeNotifier {
   String? get currentUserName => _currentUserName;
   String? get currentUserEmail => _currentUserEmail;
   String? get currentUserPhone => _currentUserPhone;
+  String? get currentUserFacility => _currentUserFacility;
   AppUserRole? get currentUserRole => _currentUserRole;
   bool get isApproved => _isApproved;
   List<UserModel> get allUsers => _allUsers;
+  Uint8List? get profileImageBytes => _profileImageBytes;
 
   // Get pending users
   List<UserModel> get pendingUsers =>
@@ -125,6 +130,7 @@ class AuthProvider extends ChangeNotifier {
       'email': _currentUserEmail,
       'role': _currentUserRole?.name,
       'isApproved': _isApproved,
+      'facility': _currentUserFacility,
     };
   }
 
@@ -171,7 +177,10 @@ class AuthProvider extends ChangeNotifier {
       _currentUserName = prefs.getString('userName');
       _currentUserEmail = prefs.getString('userEmail');
       _currentUserPhone = prefs.getString('userPhone');
+      _currentUserFacility = prefs.getString('userFacility');
       _isApproved = prefs.getBool('isApproved') ?? false;
+      final imgBase64 = prefs.getString('profileImageBase64');
+      if (imgBase64 != null) _profileImageBytes = base64Decode(imgBase64);
 
       final roleString = prefs.getString('userRole');
       if (roleString != null) {
@@ -206,6 +215,7 @@ class AuthProvider extends ChangeNotifier {
       _currentUserName = userData['name'];
       _currentUserEmail = userData['email'];
       _currentUserPhone = userData['phone'] ?? '';
+      _currentUserFacility = userData['facility'] ?? '';
       _isApproved = userData['is_approved'];
       
       final roleStr = userData['role'];
@@ -344,6 +354,7 @@ class AuthProvider extends ChangeNotifier {
     _currentUserName = null;
     _currentUserEmail = null;
     _currentUserPhone = null;
+    _currentUserFacility = null;
     _currentUserRole = null;
     _isApproved = false;
 
@@ -376,13 +387,27 @@ class AuthProvider extends ChangeNotifier {
       if (_currentUserPhone != null) {
         await prefs.setString('userPhone', _currentUserPhone!);
       }
+      if (_currentUserFacility != null) {
+        await prefs.setString('userFacility', _currentUserFacility!);
+      }
       if (_currentUserRole != null) {
         await prefs.setString('userRole', _currentUserRole.toString());
       }
       await prefs.setBool('isApproved', _isApproved);
+      if (_profileImageBytes != null) {
+        await prefs.setString('profileImageBase64', base64Encode(_profileImageBytes!));
+      } else {
+        await prefs.remove('profileImageBase64');
+      }
     } catch (e) {
       // Handle error silently
     }
+  }
+
+  Future<void> updateProfileImage(Uint8List bytes) async {
+    _profileImageBytes = bytes;
+    await _saveAuthData();
+    notifyListeners();
   }
 
   // Get role display name
