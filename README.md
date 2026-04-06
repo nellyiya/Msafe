@@ -10,7 +10,7 @@ The objective of the system is to improve early diagnosis of pregnancy complicat
 
 ---
 
-## Live Demo
+Mobile App: APK available for distribution (mamasafe-v1.0.0.apk)
 
 https://resplendent-profiterole-d5bc5d.netlify.app/
 
@@ -34,6 +34,7 @@ MamaSafe follows a client–server architecture:
 
 ## Project Structure
 
+```
 MamaSafe-App/
 ├── backend/
 │   ├── app.py
@@ -45,7 +46,7 @@ MamaSafe-App/
 │   ├── assets/
 │   └── pubspec.yaml
 └── README.md
-
+```
 ## System Requirements
 
 - Flutter SDK  
