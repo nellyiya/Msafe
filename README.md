@@ -47,15 +47,8 @@ MamaSafe-App/
 │   ├── lib/
 │   ├── assets/
 │   └── pubspec.yaml
-├── screenshots/          
-│   ├── home.png
-│   ├── login.png
-│   ├── dashboard.png
-│   └── prediction.png
 └── README.md
 ```
-````
-
 ---
 
 ## System Requirements
