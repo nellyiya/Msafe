@@ -34,9 +34,6 @@ MamaSafe follows a client–server architecture:
 
 ## Project Structure
 
-```
-
-```
 MamaSafe-App/
 ├── backend/
 │   ├── app.py
@@ -48,8 +45,6 @@ MamaSafe-App/
 │   ├── assets/
 │   └── pubspec.yaml
 └── README.md
-```
----
 
 ## System Requirements
 
